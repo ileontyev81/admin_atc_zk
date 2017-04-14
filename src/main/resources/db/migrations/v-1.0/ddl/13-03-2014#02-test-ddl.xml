@@ -1,0 +1,99 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<databaseChangeLog xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+				   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+				   xmlns:ext="http://www.liquibase.org/xml/ns/dbchangelog-ext"
+    			   xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.0.xsd
+    								   http://www.liquibase.org/xml/ns/dbchangelog-ext http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-ext.xsd">
+    								   
+	<changeSet id="1" author="i.leontyev@gmail.com" context="test" dbms="postgresql">
+    	<sql>
+            CREATE TYPE test_entry AS
+		    (
+			     entry account_entry[],
+			     label text
+		    );
+			ALTER TYPE test_entry OWNER TO ${jdbc.username};
+        </sql>
+        <rollback>
+           	DROP TYPE test_entry;
+        </rollback>
+    </changeSet>
+    
+ 	<changeSet id="2" author="i.leontyev@gmail.com" runOnChange="true" context="test" dbms="postgresql">
+		<createProcedure>
+			DROP FUNCTION IF EXISTS test_entry_func(in filter result_filter);
+		
+			CREATE OR REPLACE FUNCTION test_entry_func(in filter result_filter) RETURNS test_entry
+		    LANGUAGE plpgsql STABLE STRICT AS 
+		    $BODY$
+			DECLARE
+				p test_entry;
+			    pa account_entry;
+				BEGIN
+				p.label = 'test';
+				--p.entry = array_agg(n) from voip_account_get_list() n;
+				pa.id = 0;
+				pa.context_id = ARRAY(SELECT (id::text, "name", FALSE)::select_entry FROM context);
+				pa.host = 'dynamic';
+				pa.nat = ARRAY(SELECT ("value", "value", FALSE)::select_entry FROM account_nat);
+				pa.qualify = 'yes';
+				pa.type = ARRAY(SELECT ("value", "value", FALSE)::select_entry FROM account_type);
+				pa.service = ARRAY(SELECT (id, ident, FALSE)::select_entry FROM service);
+				p.entry = array_agg(pa);
+				RETURN p;
+			END;
+			$BODY$
+    	</createProcedure>
+    	<sql>
+            ALTER FUNCTION test_entry_func(in filter result_filter) OWNER TO ${jdbc.username};
+        </sql>
+        <rollback>
+        	DROP FUNCTION test_entry_func(in filter result_filter);
+        </rollback>
+    </changeSet>
+    
+ 	<changeSet id="3" author="i.leontyev@gmail.com" runOnChange="true" context="test" dbms="postgresql">
+		<createProcedure>
+			DROP FUNCTION IF EXISTS test_function(in filter result_filter);
+		
+			CREATE OR REPLACE FUNCTION test_function(in filter result_filter) RETURNS test_entry AS
+			$BODY$
+			DECLARE
+			   te test_entry;
+			   ae1 account_entry;
+			   ae2 account_entry;
+			   se1 select_entry;
+			   se2 select_entry;
+			BEGIN
+			se1.value='aaa1';
+			se1.label='bbb1';
+			se1.selected='true';
+			se2.value='aaa2';
+			se2.label='bbb2';
+			se2.selected='false';
+			--
+			ae1.id = 1;
+			ae1.name = 'asdsads';
+			ae1.context_id = array_append(array_agg(se1), se2);
+			ae1.nat = array_append(array_agg(se1), se2);
+			ae2.id = 2;
+			ae2.name = 'sgdfsdfds';
+			ae2.context_id = array_append(array_agg(se1), se2);
+			ae2.nat = array_append(array_agg(se1), se2);
+			--
+			te.entry = array_append(array_agg(ae1), ae2);
+			te.label = 'ssssss';
+			RETURN te;
+			END;
+			$BODY$
+			LANGUAGE plpgsql STABLE STRICT;
+    	</createProcedure>
+    	<sql>
+            ALTER FUNCTION test_function(in filter result_filter) OWNER TO ${jdbc.username};
+        </sql>
+        <rollback>
+        	DROP FUNCTION test_function(in filter result_filter);
+        </rollback>
+    </changeSet>
+ 
+</databaseChangeLog>

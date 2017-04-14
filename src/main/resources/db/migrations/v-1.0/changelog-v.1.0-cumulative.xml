@@ -1,0 +1,63 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<databaseChangeLog xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+				   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+				   xmlns:ext="http://www.liquibase.org/xml/ns/dbchangelog-ext"
+    			   xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.0.xsd
+    								   http://www.liquibase.org/xml/ns/dbchangelog-ext http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-ext.xsd">
+	
+	<property name="now" value="now()::timestamp without time zone" dbms="postgresql"/>
+
+	<preConditions>
+		<or>
+			<dbms type="postgresql" />
+			<!-- <dbms type="hq" /> -->
+		</or>
+	</preConditions>
+	
+    <changeSet id="save-point-excluding" author="i.leontyev@gmail.com" context="test">
+    	<tagDatabase tag="v.1.0-excluding"/>
+    </changeSet>
+    
+    <!-- add hstore extension -->
+    <changeSet id="add hstore extension" author="i.leontyev@gmail.com" context="test">
+    	<sql>
+    		CREATE EXTENSION HSTORE;
+    	</sql>
+	    <rollback>
+        	DROP EXTENSION HSTORE;
+        </rollback>
+    </changeSet>    
+     
+	<include file="ddl/13-03-2014#01-general-types.xml" relativeToChangelogFile="true"/>
+	<include file="ddl/08-04-2014#02-general-functions.xml" relativeToChangelogFile="true"/>
+	<include file="ddl/08-04-2014#03-general-tables.xml" relativeToChangelogFile="true"/>
+
+	<include file="ddl/account/13-03-2014#01-account-tables.xml" relativeToChangelogFile="true"/>
+	<include file="ddl/account/17-03-2014#02-account-types.xml" relativeToChangelogFile="true"/>
+	<include file="ddl/account/17-03-2014#03-account-functions.xml" relativeToChangelogFile="true"/>
+	<!-- <include file="dml/account/13-03-2014#01-account-data.xml" relativeToChangelogFile="true"/> -->
+
+	<include file="ddl/security/21-02-2014#01-security-tables.xml" relativeToChangelogFile="true"/>
+	<include file="ddl/security/21-02-2014#02-security-types.xml" relativeToChangelogFile="true"/>
+	<include file="ddl/security/21-02-2014#03-security-functions.xml" relativeToChangelogFile="true"/>
+		<include file="dml/security/21-02-2014#01-security-data.xml" relativeToChangelogFile="true"/>
+
+	<include file="ddl/extension/21-02-2014#01-extension-tables.xml" relativeToChangelogFile="true"/>
+	<include file="ddl/extension/17-03-2014#02-extension-types.xml" relativeToChangelogFile="true"/>
+	<include file="ddl/extension/11-03-2014#03-extension-function.xml" relativeToChangelogFile="true"/>
+		<include file="dml/extension/11-03-2014#01-extension-data.xml" relativeToChangelogFile="true"/>
+	
+	<include file="ddl/provider/31-03-2014#1-provider-tables.xml" relativeToChangelogFile="true"/>
+	<include file="ddl/provider/27-03-2014#2-provider-types.xml" relativeToChangelogFile="true"/>
+	<include file="ddl/provider/31-03-2014#3-provider-functions.xml" relativeToChangelogFile="true"/>
+	
+	<!-- ??? -->
+	<include file="dml/account/13-03-2014#01-account-data.xml" relativeToChangelogFile="true"/>
+
+	<!-- <include file="ddl/13-03-2014#02-test-ddl.xml" relativeToChangelogFile="true"/> -->
+ 
+    <changeSet id="save-point-including" author="i.leontyev@gmail.com" context="test">
+    	<tagDatabase tag="v.1.0-including"/>
+    </changeSet>
+ 
+</databaseChangeLog>

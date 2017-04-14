@@ -1,0 +1,320 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<databaseChangeLog xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+				   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+				   xmlns:ext="http://www.liquibase.org/xml/ns/dbchangelog-ext"
+    			   xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.0.xsd
+    								   http://www.liquibase.org/xml/ns/dbchangelog-ext http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-ext.xsd">
+    								   
+	<changeSet id="1" author="i.leontyev@gmail.com" context="test">
+        <createTable tableName="context">
+            <column name="id" type="int">
+                <constraints primaryKey="true" nullable="false" primaryKeyName="pk_context" />
+            </column>
+            <column name="name" type="text"/>
+        </createTable>
+        <sql>
+        	ALTER TABLE context OWNER TO ${jdbc.username};
+        </sql>
+        <rollback>
+        	<dropTable tableName="context"/>
+        </rollback>
+    </changeSet>
+
+	<changeSet id="2" author="i.leontyev@gmail.com" context="test">
+        <createTable tableName="account_nat">
+            <column name="id" type="int">
+                <constraints primaryKey="true" nullable="false" primaryKeyName="pk_account_nat" />
+            </column>
+            <column name="name" type="text"/>
+        </createTable>
+        <sql>
+        	ALTER TABLE account_nat OWNER TO ${jdbc.username};
+        </sql>
+        <rollback>
+        	<dropTable tableName="account_nat"/>
+        </rollback>
+    </changeSet>
+    
+	<changeSet id="3" author="i.leontyev@gmail.com" context="test">
+        <createTable tableName="account_qualify">
+            <column name="id" type="int">
+                <constraints primaryKey="true" nullable="false" primaryKeyName="pk_account_qualify" />
+            </column>
+            <column name="name" type="text">
+            	<constraints nullable="false"/>
+            </column>
+        </createTable>
+        <sql>
+        	ALTER TABLE account_qualify OWNER TO ${jdbc.username};
+        </sql>
+        <rollback>
+        	<dropTable tableName="account_qualify"/>
+        </rollback>
+    </changeSet>
+
+	<changeSet id="4" author="i.leontyev@gmail.com" context="test">
+        <createTable tableName="account_type">
+            <column name="id" type="int">
+                <constraints primaryKey="true" nullable="false" primaryKeyName="pk_account_type" />
+            </column>
+            <column name="name" type="text">
+            	<constraints nullable="false"/>
+            </column>
+        </createTable>
+        <sql>
+        	ALTER TABLE account_type OWNER TO ${jdbc.username};
+        </sql>
+        <rollback>
+        	<dropTable tableName="account_type"/>
+        </rollback>
+    </changeSet>
+    
+	<changeSet id="5" author="i.leontyev@gmail.com" context="test">
+        <createTable tableName="service">
+            <column name="id" type="int">
+                <constraints primaryKey="true" nullable="false" primaryKeyName="pk_service" />
+            </column>
+            <column name="ident" type="text">
+            	<constraints nullable="false"/>
+            </column>
+        </createTable>
+        <sql>
+        	ALTER TABLE service OWNER TO ${jdbc.username};
+        </sql>
+        <rollback>
+        	<dropTable tableName="service"/>
+        </rollback>
+    </changeSet>
+    
+	<changeSet id="6" author="i.leontyev@gmail.com" context="test">
+        <createTable tableName="account_dtmf">
+            <column name="id" type="int">
+                <constraints primaryKey="true" nullable="false" primaryKeyName="account_dtmf_pkey" />
+            </column>
+            <column name="name" type="text">
+            	<constraints nullable="false"/>
+            </column>
+        </createTable>
+        <sql>
+        	ALTER TABLE account_dtmf_pkey OWNER TO ${jdbc.username};
+        </sql>
+        <rollback>
+        	<dropTable tableName="account_dtmf"/>
+        </rollback>
+    </changeSet>
+    
+	<changeSet id="7" author="i.leontyev@gmail.com" context="test">
+        <createTable tableName="account">
+            <column name="id" autoIncrement="true" type="int">
+                <constraints primaryKey="true" nullable="false" primaryKeyName="sip_conf_pkey" />
+            </column>
+            <column name="name" type="text">
+            	<constraints nullable="false" uniqueConstraintName="uni_account_name"/>
+            </column>
+            <column name="amaflags" type="text"/>
+            <column name="callgroup" type="text"/>
+            <column name="callerid" type="text"/>
+            <column name="directmedia" type="text" defaultValue="yes"/> <!-- 'yes'::text -->
+            <column name="defaultip" type="text"/> <!-- 'yes'::text -->
+            <column name="fromuser" type="text"/> <!-- 'yes'::text -->
+            <column name="fromdomain" type="text"/> <!-- 'yes'::text -->
+            <column name="host" type="text" defaultValue="dynamic"/> <!-- 'dynamic'::text -->
+            <column name="insecure" type="text"/>
+            <column name="language" type="text"/>
+            <column name="mailbox" type="text"/>
+            <column name="md5secret" type="text"/>
+            <column name="mask" type="text"/>
+            <column name="pickupgroup" type="text"/>
+            <column name="port" type="text"/>
+            <column name="restrictcid" type="text"/>
+            <column name="rtptimeout" type="text"/>
+            <column name="rtpholdtimeout" type="text"/>
+            <column name="secret" type="text"/>
+            <column name="username" type="text"/>
+            <column name="musiconhold" type="text"/>
+            <column name="regseconds" type="int" defaultValue="0">
+            	<constraints nullable="false"/>
+            </column>
+            <column name="ipaddr" type="text"/>
+            <column name="regexten" type="text"/>
+            <column name="cancallforward" type="text" defaultValue="yes"/>
+            <column name="lastms" type="text"/>
+            <column name="useragent" type="text"/>
+            <column name="defaultuser" type="text"/>
+            <column name="fullcontact" type="text"/>
+            <column name="regserver" type="text"/>
+            <column name="service_id" type="int">
+            	<constraints nullable="false"/>
+            </column>
+            <column name="calllimit" type="int" defaultValue="10">
+            	<constraints nullable="false"/>
+            </column>
+            <column name="context_id" type="int">
+            	<constraints nullable="false"/>
+            </column>
+            <column name="created" type="java.sql.Types.TIMESTAMP" defaultValueComputed="${now}">
+            	<constraints nullable="false"/>
+            </column>
+            <column name="user_id" type="int"/>
+            <column name="nat_id" type="int">
+                <constraints nullable="false"/>
+            </column>
+            <column name="type_id" type="int"/>
+            <column name="qualify_id" type="int">
+            	<constraints nullable="false"/>
+            </column>
+            <column name="dtmf_id" type="int">
+            	<constraints nullable="false"/>
+            </column>
+        </createTable>
+        <sql>
+        	ALTER TABLE account OWNER TO ${jdbc.username};
+        </sql>
+        <rollback>
+        	<dropTable tableName="account"/>
+        </rollback>
+    </changeSet>
+    
+    <changeSet id="8" author="i.leontyev@gmail.com" context="test">
+		<addForeignKeyConstraint 
+			baseColumnNames="nat_id"
+            baseTableName="account"
+            constraintName="account_fk"
+            deferrable="true"
+            initiallyDeferred="true"
+            onDelete="RESTRICT"
+            onUpdate="NO ACTION"
+            referencedColumnNames="id"
+            referencedTableName="account_nat"/>
+        <rollback>
+        	<dropForeignKeyConstraint baseTableName="account" constraintName="account_fk"/>
+        </rollback>
+    </changeSet>
+    <!-- set account_type fk restrictions on account table -->
+    <changeSet id="9" author="i.leontyev@gmail.com" context="test">
+		<addForeignKeyConstraint 
+			baseColumnNames="type_id"
+            baseTableName="account"
+            constraintName="account_fk1"
+            deferrable="true"
+            initiallyDeferred="true"
+            onDelete="RESTRICT"
+            onUpdate="NO ACTION"
+            referencedColumnNames="id"
+            referencedTableName="account_type"/>
+        <rollback>
+        	<dropForeignKeyConstraint baseTableName="account" constraintName="account_fk1"/>
+        </rollback>
+    </changeSet>
+    <changeSet id="10" author="i.leontyev@gmail.com" context="test">
+		<addForeignKeyConstraint 
+			baseColumnNames="qualify_id"
+            baseTableName="account"
+            constraintName="account_fk2"
+            deferrable="true"
+            initiallyDeferred="true"
+            onDelete="RESTRICT"
+            onUpdate="NO ACTION"
+            referencedColumnNames="id"
+            referencedTableName="account_qualify"/>
+        <rollback>
+        	<dropForeignKeyConstraint baseTableName="account" constraintName="account_fk2"/>
+        </rollback>
+    </changeSet>
+    <changeSet id="11" author="i.leontyev@gmail.com" context="test">
+		<addForeignKeyConstraint 
+			baseColumnNames="dtmf_id"
+            baseTableName="account"
+            constraintName="account_fk3"
+            deferrable="true"
+            initiallyDeferred="true"
+            onDelete="RESTRICT"
+            onUpdate="NO ACTION"
+            referencedColumnNames="id"
+            referencedTableName="account_dtmf"/>
+        <rollback>
+        	<dropForeignKeyConstraint baseTableName="account" constraintName="account_fk3"/>
+        </rollback>
+    </changeSet>
+    <changeSet id="12" author="i.leontyev@gmail.com" context="test">
+		<addForeignKeyConstraint 
+			baseColumnNames="context_id"
+            baseTableName="account"
+            constraintName="f_account_context_id"
+            deferrable="true"
+            initiallyDeferred="true"
+            onDelete="RESTRICT"
+            onUpdate="NO ACTION"
+            referencedColumnNames="id"
+            referencedTableName="context"/>
+        <rollback>
+        	<dropForeignKeyConstraint baseTableName="account" constraintName="f_account_context_id"/>
+        </rollback>
+    </changeSet>
+    <changeSet id="13" author="i.leontyev@gmail.com" context="test">
+		<addForeignKeyConstraint 
+			baseColumnNames="service_id"
+            baseTableName="account"
+            constraintName="f_account_service_id"
+            deferrable="true"
+            initiallyDeferred="true"
+            onDelete="RESTRICT"
+            onUpdate="NO ACTION"
+            referencedColumnNames="id"
+            referencedTableName="service"/>
+        <rollback>
+        	<dropForeignKeyConstraint baseTableName="account" constraintName="f_account_service_id"/>
+        </rollback>
+    </changeSet>
+    
+    <!-- set index on account table -->
+    <changeSet id="14" author="i.leontyev@gmail.com" context="test">
+		<sql>
+			CREATE INDEX fki_f_account_context_id
+			ON account
+			USING btree(context_id);
+		</sql>
+        <rollback>
+        	<dropIndex tableName="account" indexName="fki_f_account_context_id"/>
+        </rollback>
+    </changeSet>
+    
+    <changeSet id="15" author="i.leontyev@gmail.com" context="test">
+        <createTable tableName="codec">
+            <column name="id" type="int">
+                <constraints primaryKey="true" nullable="false" primaryKeyName="account_codec_pkey" />
+            </column>
+            <column name="name" type="text"/>
+        </createTable>
+        <sql>
+        	ALTER TABLE codec OWNER TO ${jdbc.username};
+        </sql>
+        <rollback>
+        	<dropTable tableName="codec"/>
+        </rollback>
+    </changeSet>
+    
+    <changeSet id="16" author="i.leontyev@gmail.com" context="test">
+        <createTable tableName="account_codec">
+            <column name="id" type="int">
+                <constraints primaryKey="true" nullable="false" primaryKeyName="account_codec_pkey1" />
+            </column>
+            <column name="account_id" type="integer">
+            	<constraints nullable="false" foreignKeyName="account_codec_fk" referencedTableName="account" referencedColumnNames="id"/>
+            </column>
+            <column name="codec_id" type="integer">
+            	<constraints nullable="false" foreignKeyName="account_codec_fk1" referencedTableName="codec" referencedColumnNames="id"/>
+            </column>
+            <column name="allow" type="boolean" defaultValueBoolean="true">
+                <constraints nullable="false" />
+            </column>
+        </createTable>
+        <sql>
+        	ALTER TABLE account_codec OWNER TO ${jdbc.username};
+        </sql>
+        <rollback>
+        	<dropTable tableName="account_codec"/>
+        </rollback>
+    </changeSet>
+    
+</databaseChangeLog>

@@ -1,0 +1,81 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<databaseChangeLog xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+				   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+				   xmlns:ext="http://www.liquibase.org/xml/ns/dbchangelog-ext"
+    			   xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.0.xsd
+    								   http://www.liquibase.org/xml/ns/dbchangelog-ext http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-ext.xsd">
+
+	<!-- User table already created-->
+	
+	<changeSet id="1" author="i.leontyev@gmail.com" context="test">
+		 <insert tableName="extension">
+            <column name="id">2</column>
+            <column name="seq">0</column>
+            <column name="description">''</column>
+            <column name="active">TRUE</column>
+            <column name="created">2014-02-26 01:38:55+04</column>
+            <column name="user_id"></column>
+            <column name="deleted">FALSE</column>
+        </insert>
+        <rollback>
+        	DELETE FROM extension WHERE id = 2; 
+        </rollback>
+    </changeSet>
+	<changeSet id="2" author="i.leontyev@gmail.com" context="test">
+		 <insert tableName="extension">
+            <column name="id">3</column>
+            <column name="seq">0</column>
+            <column name="description">''</column>
+            <column name="active">TRUE</column>
+            <column name="created">2014-02-26 01:38:55+04</column>
+            <column name="user_id"></column>
+            <column name="deleted">FALSE</column>
+        </insert>
+        <rollback>
+        	DELETE FROM extension WHERE id = 3; 
+        </rollback>
+    </changeSet>
+	<changeSet id="3" author="i.leontyev@gmail.com" context="test">
+		 <insert tableName="extension">
+            <column name="id">4</column>
+            <column name="seq">0</column>
+            <column name="description">''</column>
+            <column name="active">TRUE</column>
+            <column name="created">2014-02-26 01:38:55+04</column>
+            <column name="user_id"></column>
+            <column name="deleted">FALSE</column>
+        </insert>
+        <rollback>
+        	DELETE FROM extension WHERE id = 4; 
+        </rollback>
+    </changeSet>
+	<changeSet id="4" author="i.leontyev@gmail.com" context="test">
+		 <insert tableName="extension">
+            <column name="id">5</column>
+            <column name="seq">100</column>
+            <column name="description">mobile</column>
+            <column name="active">FALSE</column>
+            <column name="created">2014-02-26 01:38:55+04</column>
+            <column name="user_id"></column>
+            <column name="deleted">FALSE</column>
+        </insert>
+        <rollback>
+        	DELETE FROM extension WHERE id = 5; 
+        </rollback>
+    </changeSet>
+	<changeSet id="5" author="i.leontyev@gmail.com" context="test">
+		 <insert tableName="extension">
+            <column name="id">6</column>
+            <column name="seq">0</column>
+            <column name="description">alarm</column>
+            <column name="active">TRUE</column>
+            <column name="created">2014-02-26 01:38:55+04</column>
+            <column name="user_id"></column>
+            <column name="deleted">FALSE</column>
+        </insert>
+        <rollback>
+        	DELETE FROM extension WHERE id = 6; 
+        </rollback>
+    </changeSet>
+ 
+</databaseChangeLog>

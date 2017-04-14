@@ -1,0 +1,105 @@
+<?page title="new page title" contentType="text/html;charset=UTF-8"?>
+<zk>
+	<div apply="org.zkoss.bind.BindComposer"
+		viewModel="@id('vm') @init('atc.gui.admin.zk.viewmodel.report.OperatorsVM')"
+		validationMessages="@id('vmsgs')">
+		<tabbox>
+			<tabs>
+				<tab label="Summary"></tab>
+				<tab label="Operation"></tab>
+				<tab label="Pause"></tab>
+				<tab label="Login"></tab>
+			</tabs>
+			<tabpanels>
+				<tabpanel>
+					<panel>
+						<panelchildren>
+							<include
+								src="uitemplates/edit_entry_ex.zul"
+								entity="@ref(vm.operatorReportSearch)"
+								submitCommand="@ref('operatorReportSearch')" />
+
+							<button label="Search"
+								sclass="btn btn-primary"
+								onClick="@command('operatorReportSearch')" />
+						</panelchildren>
+					</panel>
+
+					<include src="uitemplates/list_entry_ex.zul"
+						entityList="@ref(vm.operatorReportList)"
+						entityClass="@ref(vm.operatorReportClass)"
+						selectedEntity="@ref(vm.selectedOperatorReport)"
+						editCommand="@ref('editOperatorReport')"
+						deleteCommand="@ref('deleteOperatorReport')" />
+
+				</tabpanel>
+				<tabpanel>
+					<panel>
+						<panelchildren>
+							<include
+								src="uitemplates/edit_entry_ex.zul"
+								entity="@ref(vm.operatorOperationSearch)"
+								submitCommand="@ref('operatorOperationSearch')" />
+
+							<button label="Search"
+								sclass="btn btn-primary"
+								onClick="@command('operatorOperationSearch')" />
+						</panelchildren>
+					</panel>
+
+					<include src="uitemplates/list_entry_ex.zul"
+						entityList="@ref(vm.operatorOperationList)"
+						entityClass="@ref(vm.operatorOperationClass)"
+						selectedEntity="@ref(vm.selectedOperatorOperation)"
+						editCommand="@ref('editOperatorOperation')"
+						deleteCommand="@ref('deleteOperatorOperation')" />
+
+				</tabpanel>
+				<tabpanel>
+					<panel>
+						<panelchildren>
+							<include
+								src="uitemplates/edit_entry_ex.zul"
+								entity="@ref(vm.operatorPauseSearch)"
+								submitCommand="@ref('operatorPauseSearch')" />
+
+							<button label="Search"
+								sclass="btn btn-primary"
+								onClick="@command('operatorPauseSearch')" />
+						</panelchildren>
+					</panel>
+
+					<include src="uitemplates/list_entry_ex.zul"
+						entityList="@ref(vm.operatorPauseList)"
+						entityClass="@ref(vm.operatorPauseClass)"
+						selectedEntity="@ref(vm.selectedOperatorPause)"
+						editCommand="@ref('editOperatorPause')"
+						deleteCommand="@ref('deleteOperatorPause')" />
+
+				</tabpanel>
+				<tabpanel>
+					<panel>
+						<panelchildren>
+							<include
+								src="uitemplates/edit_entry_ex.zul"
+								entity="@ref(vm.operatorLoginSearch)"
+								submitCommand="@ref('operatorLoginSearch')" />
+
+							<button label="Search"
+								sclass="btn btn-primary"
+								onClick="@command('operatorLoginSearch')" />
+						</panelchildren>
+					</panel>
+
+					<include src="uitemplates/list_entry_ex.zul"
+						entityList="@ref(vm.operatorLoginList)"
+						entityClass="@ref(vm.operatorLoginClass)"
+						selectedEntity="@ref(vm.selectedOperatorLogin)"
+						editCommand="@ref('editOperatorLogin')"
+						deleteCommand="@ref('deleteOperatorLogin')" />
+
+				</tabpanel>
+			</tabpanels>
+		</tabbox>
+	</div>
+</zk>

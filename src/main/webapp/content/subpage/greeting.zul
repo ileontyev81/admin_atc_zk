@@ -1,0 +1,3 @@
+<zk>
+    <label value="${labels.welcome.page.message}" />
+</zk>

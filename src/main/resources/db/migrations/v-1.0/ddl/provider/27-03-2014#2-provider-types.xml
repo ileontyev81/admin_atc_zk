@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<databaseChangeLog xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+				   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+				   xmlns:ext="http://www.liquibase.org/xml/ns/dbchangelog-ext"
+    			   xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.0.xsd
+    								   http://www.liquibase.org/xml/ns/dbchangelog-ext http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-ext.xsd">
+
+	<changeSet id="1" author="i.leontyev@gmail.com" context="test" dbms="postgresql">
+    	<sql>
+            CREATE TYPE provider_entry AS
+		    (
+			   	id integer,
+			    description text,
+			    tech text,
+			    callerid text,
+			    callerid_set boolean,
+			    created timestamp(0) with time zone,
+			    user_id integer,
+			    user_login text
+		    );
+		    ALTER TYPE provider_entry OWNER TO ${jdbc.username};
+        </sql>
+        <rollback>
+            DROP TYPE provider_entry;
+        </rollback>
+    </changeSet>    							
+    							
+</databaseChangeLog>

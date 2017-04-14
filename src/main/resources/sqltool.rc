@@ -1,0 +1,5 @@
+driver ${jdbc.driverClassName}
+urlid ${jdbc.host}-${jdbc.username}
+url ${jdbc.url}
+username ${jdbc.username}
+password ${jdbc.password}

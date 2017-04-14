@@ -1,0 +1,67 @@
+<?taglib uri="http://www.zkoss.org/dsp/web/core" prefix="c"?>
+<?variable-resolver class="org.zkoss.spring.DelegatingVariableResolver"?>
+<zk>
+    <window title="Error ${requestScope['javax.servlet.error.status_code']}"  position="center" 
+    		vflex="1" border="normal" mode="modal" closable="true" width="500px">
+    	<vbox hflex="1">
+    		<panel hflex="1">
+    			<panelchildren>
+   					<n:p xmlns:n="native">
+		    		   An error has occured. If you believe this error is a system problem, and you
+					   continue to get this error, please contact a special person via <a href="mailto:'r.shubovich@gmail.com' ">email</a>
+					</n:p>
+    			</panelchildren>
+    		</panel>
+    		<hbox style="margin-left:auto; margin-right:auto">
+    			<button class="btn btn-primary btn-sm" label="Ignore" onClick="spaceOwner.detach()" />
+    			<button class="btn btn-primary btn-sm" label="Reload Page" onClick="Executions.sendRedirect(null)" />
+    			<button class="btn btn-primary btn-sm" label="Return Back" >
+					<attribute name="onClick">
+						<![CDATA[
+							transitionManager.back();
+							spaceOwner.detach();
+			        	]]>
+	        		</attribute>
+        		</button>
+    		</hbox>
+
+    		<a id="toggler" label="Details" iconSclass="z-icon-angle-double-down">
+				<attribute name="onClick">
+				<![CDATA[
+					if (errorBlock.isVisible())
+					{
+						toggler.setIconSclass("z-icon-angle-double-down");
+					}
+					else
+					{
+						toggler.setIconSclass("z-icon-angle-double-up");
+					}
+					errorBlock.setVisible(!errorBlock.isVisible());
+	        	]]>
+        		</attribute>
+			</a>
+			<panel id="errorBlock" visible="false">
+    			<panelchildren>
+					<textbox style="resize:none;" rows="10" width="100%" id="errorMessage"/>
+					<zscript>
+						import java.io.PrintWriter;
+						import java.io.StringWriter;
+						
+						Exception ex = (Exception)requestScope.get("javax.servlet.error.exception");
+						StringWriter sw = new StringWriter();
+						PrintWriter pw = new PrintWriter(sw);
+						ex.printStackTrace(pw);
+						errorMessage.setValue(sw.toString());
+					</zscript>   					
+    			</panelchildren>
+    		</panel>
+    		
+    	</vbox>
+	    <!-- write error into log -->
+	    <zscript>
+	    	org.zkoss.util.logging.Log.lookup("Fatal").error(requestScope.get("javax.servlet.error.exception"));
+	    </zscript>
+    </window>
+
+
+</zk>

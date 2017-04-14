@@ -1,0 +1,142 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<databaseChangeLog xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+				   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+				   xmlns:ext="http://www.liquibase.org/xml/ns/dbchangelog-ext"
+    			   xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.0.xsd
+    								   http://www.liquibase.org/xml/ns/dbchangelog-ext http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-ext.xsd">
+    							
+    <changeSet id="1" author="i.leontyev@gmail.com" runOnChange="true" context="test" dbms="postgresql">
+		<createProcedure>
+			DROP FUNCTION IF EXISTS voip_extension_direction_save(extension_direction_entry, integer);
+		
+			CREATE OR REPLACE FUNCTION voip_extension_direction_save(p_entry extension_direction_entry, p_user_id integer DEFAULT NULL::integer)
+			  RETURNS extension_direction_entry AS
+			$BODY$
+			DECLARE
+				p_id integer;
+			BEGIN
+			
+			p_id = p_entry.id;
+			
+			IF p_entry.id > 0 THEN
+				p_id = p_entry.id;
+			    UPDATE extension_direction
+			    	SET 
+			        	active = p_entry.active,
+			            regex = p_entry.regex
+					WHERE id = p_id;
+			ELSE
+				INSERT INTO extension_direction
+			    	(extension_id, active, regex, user_id)
+			        VALUES (p_entry.extension_id, p_entry.active, p_entry.regex, p_user_id) 
+			        RETURNING id INTO p_id;
+			END IF;
+			
+			RETURN voip_extension_direction_get(p_id);
+			END;
+			$BODY$
+			  LANGUAGE plpgsql VOLATILE;
+    	</createProcedure>
+    	<sql>
+            ALTER FUNCTION voip_extension_direction_save(extension_direction_entry, integer) OWNER TO ${jdbc.username};
+        </sql>
+        <rollback>
+        	DROP FUNCTION voip_extension_direction_save(extension_direction_entry, integer);
+        </rollback>
+    </changeSet>
+    
+ 	<changeSet id="2" author="i.leontyev@gmail.com" runOnChange="true" context="test" dbms="postgresql">
+		<createProcedure>
+			DROP FUNCTION IF EXISTS voip_extension_direction_get(integer, boolean);
+			
+			CREATE OR REPLACE FUNCTION voip_extension_direction_get(p_direction_id integer DEFAULT NULL::integer, p_light boolean DEFAULT false)
+			  RETURNS extension_direction_entry AS
+			$BODY$
+			DECLARE
+				p_rec record;
+				p extension_direction_entry;
+			BEGIN
+				IF p_direction_id IS NOT NULL THEN
+					SELECT ed.*, u.login AS user_login INTO p_rec FROM
+						extension_direction ed
+					    	LEFT JOIN "user" u ON u.id = ed.user_id
+					    WHERE ed.id = p_direction_id;
+					IF FOUND THEN
+						p.id = p_rec.id;
+					    p.user_id = p_rec.user_id;
+					    p.user_login  = p_rec.user_login;
+					    p.regex = p_rec.regex;
+					    p.created = p_rec.created;
+					    p.active = p_rec.active;
+					    RETURN p;
+					END IF;
+				RAISE EXCEPTION 'RESULT:20;';
+				ELSE
+					p.id = 0;
+					p.regex = ''::text;
+					p.active = TRUE;
+					RETURN p;
+				END IF;
+			END;
+			$BODY$
+			  LANGUAGE plpgsql VOLATILE;
+    	</createProcedure>
+    	<sql>
+            ALTER FUNCTION voip_extension_direction_get(integer, boolean) OWNER TO ${jdbc.username};
+        </sql>
+        <rollback>
+        	DROP FUNCTION voip_extension_direction_get(integer, boolean);
+        </rollback>
+    </changeSet>
+<!--      
+ 	<changeSet id="3" author="i.leontyev@gmail.com" runOnChange="true" context="test" dbms="postgresql">
+		<createProcedure>
+			DROP FUNCTION IF EXISTS voip_provider_get_list(in p_filter result_filter);
+		
+			CREATE OR REPLACE FUNCTION voip_provider_get_list(p_filter result_filter)
+			  RETURNS SETOF provider_entry AS
+			$BODY$
+			DECLARE
+				p_id integer;
+			BEGIN
+				FOR p_id IN SELECT id FROM provider ORDER BY id DESC
+				LOOP
+					RETURN NEXT voip_provider_get(p_id);
+				END LOOP;
+			END;
+			$BODY$
+			  LANGUAGE plpgsql VOLATILE;
+    	</createProcedure>
+    	<sql>
+            ALTER FUNCTION voip_provider_get_list(in p_filter result_filter) OWNER TO ${jdbc.username};
+        </sql>
+        <rollback>
+        	DROP FUNCTION voip_provider_get_list(in p_filter result_filter);
+        </rollback>
+    </changeSet>     
+     
+ 	<changeSet id="4" author="i.leontyev@gmail.com" runOnChange="true" context="test" dbms="postgresql">
+		<createProcedure>
+			DROP FUNCTION IF EXISTS voip_provider_delete(p_id integer);
+			
+			CREATE OR REPLACE FUNCTION voip_provider_delete(p_id integer)
+			  RETURNS void AS
+			$BODY$
+						BEGIN
+							DELETE FROM provider a where a.id = p_id;
+						END;
+						$BODY$
+			  LANGUAGE plpgsql VOLATILE;
+    	</createProcedure>
+    	<sql>
+            ALTER FUNCTION voip_provider_delete(integer) OWNER TO ${jdbc.username};
+        </sql>
+        <rollback>
+        	DROP FUNCTION voip_provider_delete(integer);
+        </rollback>
+    </changeSet>
+       
+ -->     
+
+ 
+</databaseChangeLog>

@@ -1,0 +1,184 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<databaseChangeLog xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+				   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+				   xmlns:ext="http://www.liquibase.org/xml/ns/dbchangelog-ext"
+    			   xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.0.xsd
+    								   http://www.liquibase.org/xml/ns/dbchangelog-ext http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-ext.xsd">
+
+	<changeSet id="1" author="i.leontyev@gmail.com" context="test">
+		<comment>User roles</comment>
+        <createTable tableName="role">
+            <column name="id" autoIncrement="true" type="integer">
+                <constraints primaryKey="true" nullable="false" primaryKeyName="key_role_id" />
+            </column>
+            <column name="name" type="text">
+            	<constraints nullable="false"/>
+            </column>
+            <column name="description" type="text"/>
+            <column name="parent_role_id" type="integer">
+            	<constraints foreignKeyName="fk_role_role" referencedTableName="role" referencedColumnNames="id"/>
+            </column>
+        </createTable>
+ 		<sql>
+            ALTER TABLE role OWNER TO ${jdbc.username};
+        </sql>
+        <rollback>
+        	<dropTable tableName="role"/>
+        </rollback>
+    </changeSet>
+ 
+ 	<changeSet id="2" author="i.leontyev@gmail.com" context="test">
+		<comment>Users list</comment>
+        <createTable tableName="user">
+            <column name="id" autoIncrement="true" type="integer">
+                <constraints primaryKey="true" nullable="false" primaryKeyName="key_user_id" />
+            </column>
+            <column name="login" type="text">
+            	<constraints nullable="false"/>
+            </column>
+            <column name="password" type="text">
+            	<constraints nullable="false"/>
+            </column>
+			<!--        
+			<column name="role_id" type="integer">
+            	<constraints foreignKeyName="fk_user_role" referencedTableName="role" referencedColumnNames="id"/>
+            </column> 
+            -->
+            <column name="firstname" type="text"/>
+            <column name="lastname" type="text"/>
+            <column name="expired" type="boolean" defaultValueBoolean="false">
+            	<constraints nullable="false"/>
+            </column>
+            <column name="blocked" type="boolean" defaultValueBoolean="false">
+            	<constraints nullable="false"/>
+            </column>
+            <column name="credentials_expired" type="boolean" defaultValueBoolean="false">
+            	<constraints nullable="false"/>
+            </column>
+            <column name="created" type="java.sql.Types.TIMESTAMP" defaultValueComputed="${now}">
+            	<constraints nullable="false"/>
+            </column>
+        </createTable>
+ 		<sql>
+            ALTER TABLE "user" OWNER TO ${jdbc.username};
+        </sql>
+        <rollback>
+        	<dropTable tableName="user"/>
+        </rollback>
+        <modifySql context="test">
+    		<replace replace="timestamp" with="timestamp(0)"/>
+        </modifySql>
+    </changeSet>
+ 
+	<changeSet id="3" author="i.leontyev@gmail.com" context="test">
+		<comment>User address</comment>
+        <createTable tableName="address">
+            <column name="id" autoIncrement="true" type="integer">
+                <constraints primaryKey="true" nullable="false" primaryKeyName="key_address_id" />
+            </column>
+            <column name="city" type="text">
+            	<constraints nullable="false"/>
+            </column>
+            <column name="street" type="text">
+            	<constraints nullable="false"/>
+            </column>
+            <column name="house" type="integer"/>
+            <column name="flat" type="integer"/>
+            <column name="owner_id" type="integer">
+            	<constraints foreignKeyName="fk_address_user" referencedTableName="user" referencedColumnNames="id"/>
+            </column>
+        </createTable>
+ 		<sql>
+            ALTER TABLE address OWNER TO ${jdbc.username};
+        </sql>
+ 		<rollback>
+ 			<dropTable tableName="address"/>
+        </rollback>
+    </changeSet>
+    
+	<changeSet id="4" author="i.leontyev@gmail.com" context="test">
+		<comment>User permission</comment>
+        <createTable tableName="permission">
+            <column name="id" autoIncrement="true" type="integer">
+                <constraints primaryKey="true" nullable="false" primaryKeyName="key_permission_id" />
+            </column>
+            <column name="name" type="text">
+            	<constraints nullable="false"/>
+            </column>
+            <column name="description" type="text">
+            	<constraints nullable="false"/>
+            </column>
+        </createTable>
+ 		<sql>
+            ALTER TABLE permission OWNER TO ${jdbc.username};
+        </sql>
+        <rollback>
+        	<dropTable tableName="permission"/>
+    	</rollback>
+    </changeSet>
+  
+  	<changeSet id="5" author="i.leontyev@gmail.com" context="test">
+		<comment>Role to User mapping</comment>
+        <createTable tableName="role_member">
+        	<column name="id" autoIncrement="true" type="integer">
+                <constraints primaryKey="true" nullable="false" primaryKeyName="key_role_member_id" />
+            </column>
+            <column name="role_id" type="integer">
+            	<constraints foreignKeyName="fk_role_member_role" referencedTableName="role" referencedColumnNames="id"/>
+            </column>
+            <column name="user_id" type="integer">
+            	<constraints foreignKeyName="fk_role_member_user" referencedTableName="user" referencedColumnNames="id"/>
+            </column>
+        </createTable>
+ 		<sql>
+            ALTER TABLE role_member OWNER TO ${jdbc.username};
+        </sql>
+        <rollback>
+        	<dropTable tableName="role_member"/>
+        </rollback>
+    </changeSet>
+    
+	<changeSet id="6" author="i.leontyev@gmail.com" context="test">
+		<createIndex tableName="role_member" indexName="ix_role_user">
+			<column name="role_id"/>
+			<column name="user_id"/>
+		</createIndex>
+		<rollback>
+			<dropIndex tableName="role_member" indexName="ix_role_user"/>
+		</rollback>
+    </changeSet>
+
+	<changeSet id="7" author="i.leontyev@gmail.com" context="test">
+		<comment>Role to Permission mapping</comment>
+        <createTable tableName="role_permission">
+        	<column name="id" autoIncrement="true" type="integer">
+                <constraints primaryKey="true" nullable="false" primaryKeyName="key_role_permission_id" />
+            </column>        	
+            <column name="role_id" type="integer">
+            	<constraints foreignKeyName="fk_role_permission_role" referencedTableName="role" referencedColumnNames="id"/>
+            </column>
+            <column name="permission_id" type="integer">
+            	<constraints foreignKeyName="fk_role_permission_permission" referencedTableName="permission" referencedColumnNames="id"/>
+            </column>
+        </createTable>
+ 		<sql>
+            ALTER TABLE role_permission OWNER TO ${jdbc.username};
+        </sql>
+        <rollback>
+        	<dropTable tableName="role_permission"/>
+        </rollback>
+    </changeSet>
+    
+	<changeSet id="8" author="i.leontyev@gmail.com" context="test">
+		<createIndex tableName="role_permission" indexName="ix_role_permission">
+			<column name="role_id"/>
+			<column name="permission_id"/>
+		</createIndex>
+		<rollback>
+			<dropIndex tableName="role_permission" indexName="ix_role_permission"/>
+		</rollback>
+    </changeSet>
+  
+  
+  
+</databaseChangeLog>

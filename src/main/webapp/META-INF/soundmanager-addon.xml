@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<language-addon>
+	<addon-name>soundmanager</addon-name> <!-- required -->
+
+ 	<version>
+		<version-class>org.zkoss.addon.soundmanager.Version</version-class>
+		<version-uid>0.8.0</version-uid>
+		<zk-version>5.0.0</zk-version><!-- or later -->
+	</version>
+
+	<language-name>xul/html</language-name>
+
+	<component>
+		<component-name>soundmanager</component-name> <!-- required -->
+		<component-class>org.zkoss.addon.soundmanager.Soundmanager</component-class> <!-- required -->
+		<widget-class>soundmanager.Soundmanager</widget-class> <!-- required -->
+		<mold>
+			<mold-name>default</mold-name>
+			<mold-uri>mold/soundmanager.js</mold-uri>
+			<css-uri>css/soundmanager.css.dsp</css-uri>
+		</mold>
+	</component>
+</language-addon>

@@ -1,0 +1,25 @@
+<?taglib uri="http://www.zkoss.org/dsp/web/core" prefix="c"?>
+<zk>
+   	<div vflex="1" hflex="1"
+		 apply="org.zkoss.bind.BindComposer"
+		 viewModel="@id('vm') @init('atc.gui.admin.zk.viewmodel.ScriptVM')"
+		 validationMessages="@id('vmsgs')">
+		 
+		<div sclass="page-header" style="padding-bottom: 8px; margin-bottom:0px;">
+			<label value="Script" 
+				   sclass="page-header" style="font-size:30px; border-bottom:0px;"  hflex="1"/>
+		</div>
+
+		<panel>
+		<panelchildren>
+		<include src="uitemplates/edit_entry_ex.zul" vflex="1"
+			     entity="@ref(vm.script)"
+			     submitCommand="@ref('saveScript')"/>
+ 		<button label="Save" sclass="btn btn-primary" onClick="@command('saveScript')"/>
+ 		</panelchildren>
+ 		</panel>
+ 		
+ 		
+	</div>	
+	
+</zk>

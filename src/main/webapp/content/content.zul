@@ -1,0 +1,5 @@
+<zk>
+	<include apply="org.zkoss.bind.BindComposer" 
+		 	 viewModel="@id('vm') @init('atc.gui.admin.zk.viewmodel.ContentVM')"
+			 src="@load(vm.url)" sclass="page-content" hflex="1"/>
+</zk>

@@ -1,0 +1,17 @@
+<configuration>
+    <!-- logging to console -->
+	<appender name="STDOUT" class="ch.qos.logback.core.ConsoleAppender">
+		<layout class="ch.qos.logback.access.PatternLayout">
+			<Pattern>combined</Pattern>
+		</layout>
+	</appender>
+    <!-- logging to file -->
+	<appender name="FILE" class="ch.qos.logback.core.FileAppender">
+		<file>access.lilith</file>
+		<encoder class="de.huxhorn.lilith.logback.encoder.AccessLilithEncoder" /> 
+	</appender>
+
+	<root level="DEBUG">
+		<appender-ref ref="STDOUT" />
+	</root>
+</configuration>

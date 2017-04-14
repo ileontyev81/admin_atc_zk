@@ -1,0 +1,22 @@
+<zk>
+	<div apply="org.zkoss.bind.BindComposer"
+		viewModel="@id('vm') @init('atc.gui.admin.zk.viewmodel.LogsVM')">
+		<div sclass="page-header"
+			style="padding-bottom: 8px; margin-bottom:0px;">
+			<label value="Router Log" sclass="page-header"
+				style="font-size:30px; border-bottom:0px; " />
+		</div>
+
+		<grid model="@bind(vm.routerLog)"
+			style="padding-right: 3px;">
+			<columns>
+				<column label="" hflex="min" align="left" />
+			</columns>
+			<rows>
+				<row>
+					<template name="model" var="line"></template>
+				</row>
+			</rows>
+		</grid>
+	</div>
+</zk>

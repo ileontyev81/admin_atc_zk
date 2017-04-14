@@ -1,0 +1,136 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<databaseChangeLog xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+				   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+				   xmlns:ext="http://www.liquibase.org/xml/ns/dbchangelog-ext"
+    			   xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.0.xsd
+    								   http://www.liquibase.org/xml/ns/dbchangelog-ext http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-ext.xsd">
+
+	<changeSet id="1" author="i.leontyev@gmail.com" context="test" dbms="postgresql">
+    	<sql>
+            CREATE TYPE extension_entry AS
+		    (
+			    id integer,
+			    seq integer,
+			    description text,
+			    active boolean,
+			    created timestamp(0) with time zone,
+			    user_id integer,
+			    user_login text,
+			    context select_entry[],
+			    service select_entry[]
+		    );
+		    ALTER TYPE extension_entry OWNER TO ${jdbc.username};
+        </sql>
+        <rollback>
+            DROP TYPE extension_entry;
+        </rollback>
+    </changeSet>
+        							
+	<changeSet id="2" author="i.leontyev@gmail.com" context="test" dbms="postgresql">
+    	<sql>
+			CREATE TYPE extension_action_callerid_entry AS
+			(
+				id integer,
+			    action_id integer,
+			    action_description text,
+			    regex text,
+			    created timestamp(0) with time zone,
+			    active boolean,
+			    user_id integer,
+			    user_login text
+		    );
+		    ALTER TYPE extension_action_callerid_entry OWNER TO ${jdbc.username};
+        </sql>
+        <rollback>
+            DROP TYPE extension_action_callerid_entry;
+        </rollback>
+    </changeSet>
+    
+	<changeSet id="3" author="i.leontyev@gmail.com" context="test" dbms="postgresql">
+    	<sql>
+			CREATE TYPE extension_action_direction_entry AS
+		    (
+			    id integer,
+			    action_id integer,
+			    action_description text,
+			    regex text,
+			    created timestamp(0) with time zone,
+			    active boolean,
+			    user_id integer,
+			    user_login text
+		    );
+		    ALTER TYPE extension_action_direction_entry OWNER TO ${jdbc.username};
+        </sql>
+        <rollback>
+            DROP TYPE extension_action_direction_entry;
+        </rollback>
+    </changeSet>
+    
+	<changeSet id="4" author="i.leontyev@gmail.com" context="test" dbms="postgresql">
+    	<sql>
+			CREATE TYPE extension_action_entry AS
+			(
+			    id integer,
+			    description text,
+			    seq integer,
+			    created timestamp(0) with time zone,
+			    parent_action_id integer,
+			    parent_action_description text,
+			    provider select_entry[],
+			    condition_script text,
+			    complete_type select_entry[],
+			    complete_script text,
+			    user_id integer,
+			    user_login text,
+			    context select_entry[],
+			    service select_entry[],
+			    direction_expression text,
+			    direction_replace text
+		    );
+		    ALTER TYPE extension_action_entry OWNER TO ${jdbc.username};
+        </sql>
+        <rollback>
+            DROP TYPE extension_action_entry;
+        </rollback>
+    </changeSet>
+    
+	<changeSet id="5" author="i.leontyev@gmail.com" context="test" dbms="postgresql">
+    	<sql>
+			CREATE TYPE extension_action_ipaddress_entry AS
+			(
+				id integer,
+				action_id integer,
+				action_description text,
+				ipaddress cidr,
+				created timestamp(0) with time zone,
+				active boolean,
+				user_id integer,
+				user_login text
+			);
+		    ALTER TYPE extension_action_ipaddress_entry OWNER TO ${jdbc.username};
+        </sql>
+        <rollback>
+            DROP TYPE extension_action_ipaddress_entry;
+        </rollback>
+    </changeSet>
+    
+	<changeSet id="6" author="i.leontyev@gmail.com" context="test" dbms="postgresql">
+    	<sql>
+			CREATE TYPE extension_direction_entry AS
+			(
+				id integer,
+				regex text,
+				created timestamp(0) with time zone,
+				user_id integer,
+				user_login text,
+				active boolean,
+				extension_id integer
+			);
+		    ALTER TYPE extension_direction_entry OWNER TO ${jdbc.username};
+        </sql>
+        <rollback>
+            DROP TYPE extension_direction_entry;
+        </rollback>
+    </changeSet>
+    							
+</databaseChangeLog>

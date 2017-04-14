@@ -1,0 +1,80 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<configuration>
+	
+	<contextListener class="ch.qos.logback.classic.jul.LevelChangePropagator"/>
+
+	<appender name="STDOUT" class="ch.qos.logback.core.ConsoleAppender">
+		<encoder>
+			<pattern>%d{HH:mm:ss.SSS} [%thread] %-5level %logger{36}/%method %msg%n</pattern>
+		</encoder>
+        <!-- deny all events with a level below INFO, that is TRACE and DEBUG -->
+		<!-- 
+		<filter class="ch.qos.logback.classic.filter.ThresholdFilter">
+      		<level>INFO</level>
+    	</filter>
+    	 -->
+	</appender>
+
+	<!-- save file localy to read by lilith -->
+	<!--
+	<appender name="FILE" class="ch.qos.logback.core.FileAppender">
+		<file>classic.lilith</file>
+		<encoder class="de.huxhorn.lilith.logback.encoder.ClassicLilithEncoder">
+			<IncludeCallerData>true</IncludeCallerData>
+		</encoder>
+	</appender>
+	-->
+	<!--
+	<appender name="FILE2" class="ch.qos.logback.core.rolling.RollingFileAppender">
+		<layout class="ch.qos.logback.classic.PatternLayout">
+			<Pattern>%d{HH:mm:ss.SSS} [%thread] %-5level %logger{36} - %msg\(%file:%line\)%n</Pattern>
+		</layout>
+		<file>${basedir}/log/admin-gui.log</file>
+		<rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
+			<FileNamePattern>admin-gui.%d{yyyy-MM-dd}.log</FileNamePattern>
+			&lt;!&ndash; keep 7 days' worth of history &ndash;&gt;
+			<MaxHistory>7</MaxHistory>
+			<TimeBasedFileNamingAndTriggeringPolicy class="ch.qos.logback.core.rolling.SizeAndTimeBasedFNATP">
+				<MaxFileSize>1MB</MaxFileSize>
+			</TimeBasedFileNamingAndTriggeringPolicy>
+		</rollingPolicy>
+	</appender>
+	-->
+
+    <logger name="atc.gui.admin" level="DEBUG" additivity="false">
+    	<appender-ref ref="STDOUT" />
+    </logger>
+    
+    <logger name="com.impossibl" level="DEBUG" additivity="false">
+    	<appender-ref ref="STDOUT" />
+    </logger>
+     
+    <logger name="org.springframework" level="DEBUG" additivity="false">
+    	<appender-ref ref="STDOUT" />
+    </logger>
+
+    <logger name="org.springframework.beans" level="DEBUG" additivity="false">
+        <appender-ref ref="STDOUT" />
+    </logger>
+
+    <logger name="org.springframework.security" level="DEBUG" additivity="false">
+        <appender-ref ref="STDOUT" />
+    </logger>
+
+    <logger name="org.zkoss" level="DEBUG" additivity="false">
+    	<appender-ref ref="STDOUT" />
+    </logger>
+    
+    <logger name="org.eclipse.jetty.util" level="ERROR" additivity="false">
+    	<appender-ref ref="STDOUT" />
+    </logger>
+    
+    <logger name="o.e.jetty" level="DEBUG" additivity="false">
+    	<appender-ref ref="STDOUT" />
+    </logger>
+
+    <root level="DEBUG">
+		<appender-ref ref="STDOUT" />
+	</root>
+
+</configuration>

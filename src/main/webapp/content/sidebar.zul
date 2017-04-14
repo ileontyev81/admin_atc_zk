@@ -1,0 +1,189 @@
+<!-- <?taglib uri="http://www.zkoss.org/zkspring/security" prefix="sec"?> -->
+<?taglib uri="/WEB-INF/tld/security.tld" prefix="sec"?>
+<zk>
+	<vlayout id="sidebar" hflex="1" sclass="sidebar"
+		apply="org.zkoss.bind.BindComposer"
+		viewModel="@id('vm') @init('atc.gui.admin.zk.viewmodel.SidebarVM')">
+		<!-- Navigation List -->
+		<navbar id="navbar" sclass="nav-list" orient="vertical">
+			<navitem label="${labels.sidebar.buttons.extensions}"
+				iconSclass="z-icon-random"
+				onClick="@global-command('open', path='{parts:[{id:extensions}]}')"
+				selected="@load(vm.selected eq 'extensions')"
+				if="${sec:isGranted('extensions')}" />
+			<nav label="${labels.sidebar.buttons.accounts.section}"
+				iconSclass="z-icon-phone"
+				if="${sec:isGranted('accounts')}">
+				<navitem
+					label="${labels.sidebar.buttons.accounts.recent}"
+					iconSclass="z-icon-angle-double-right"
+					onClick="@global-command('open', path='{parts:[{id:accounts}]}')"
+					selected="@load(vm.selected eq 'accounts')" />
+				<navitem
+					label="${labels.sidebar.buttons.accounts.search}"
+					iconSclass="z-icon-angle-double-right"
+					onClick="@global-command('open', path='{parts:[{id:accounts}, {id:account_search}]}')"
+					selected="@load(vm.selected eq 'account_search')" />
+				<navitem
+					label="${labels.sidebar.buttons.accounts.create}"
+					iconSclass="z-icon-angle-double-right"
+					onClick="@global-command('open', path='{parts:[{id:accounts}, {id:account,params:{objectId:0}}]}')"
+					selected="@load(vm.selected eq 'account')" />
+			</nav>
+			<nav label="${labels.sidebar.buttons.operators.section}"
+				iconSclass="z-icon-headphones"
+				if="${sec:isGranted('operators')}">
+				<navitem
+					label="${labels.sidebar.buttons.operators.recent}"
+					iconSclass="z-icon-angle-double-right"
+					onClick="@global-command('open', path='{parts:[{id:operators}]}')"
+					selected="@load(vm.selected eq 'operators')" />
+				<navitem
+					label="${labels.sidebar.buttons.operators.search}"
+					iconSclass="z-icon-angle-double-right"
+					onClick="@global-command('open', path='{parts:[{id:operators}, {id:operator_search}]}')"
+					selected="@load(vm.selected eq 'operator_search')" />
+				<navitem
+					label="${labels.sidebar.buttons.operators.create}"
+					iconSclass="z-icon-angle-double-right"
+					onClick="@global-command('open', path='{parts:[{id:operators}, {id:operator,params:{objectId:0}}]}')"
+					selected="@load(vm.selected eq 'operator')" />
+				<navitem
+					label="${labels.sidebar.buttons.groups}"
+					iconSclass="z-icon-angle-double-right"
+					onClick="@global-command('open', path='{parts:[{id:groups}]}')"
+					selected="@load(vm.selected eq 'groups')"
+					if="${sec:isGranted('operators.groups')}" />
+			</nav>
+			<!-- <navitem label="${labels.sidebar.buttons.actions}"
+				iconSclass="z-icon-edit"
+				onClick="@global-command('open', path='{parts:[{id:actions}]}')"
+				selected="@load(vm.selected eq 'actions')" /> -->
+			<navitem label="${labels.sidebar.buttons.scripts}"
+				iconSclass="z-icon-cog"
+				onClick="@global-command('open', path='{parts:[{id:scripts}]}')"
+				selected="@load(vm.selected eq 'scripts')" 
+				if="${sec:isGranted('scripts')}"/>
+			<navitem label="${labels.sidebar.buttons.providers}"
+				iconSclass="z-icon-globe"
+				onClick="@global-command('open', path='{parts:[{id:providers}]}')"
+				selected="@load(vm.selected eq 'providers')" 
+				if="${sec:isGranted('providers')}"/>
+			<navitem label="${labels.sidebar.buttons.queues}"
+				iconSclass="z-icon-refresh"
+				onClick="@global-command('open', path='{parts:[{id:queues}]}')"
+				selected="@load(vm.selected eq 'queues')" 
+				if="${sec:isGranted('queues')}"/>
+			<navitem label="${labels.sidebar.buttons.shifts}"
+				iconSclass="z-icon-calendar"
+				onClick="@global-command('open', path='{parts:[{id:shifts}]}')"
+				selected="@load(vm.selected eq 'shifts')" 
+				if="${sec:isGranted('shifts')}"/>
+			<navitem label="${labels.sidebar.buttons.services}"
+				iconSclass="z-icon-briefcase"
+				onClick="@global-command('open', path='{parts:[{id:services}]}')"
+				selected="@load(vm.selected eq 'services')" 
+				if="${sec:isGranted('services')}"/>
+
+
+			<!--  <nav label="${labels.drivers.$}" iconSclass="z-icon-truck"	>
+				<navitem label="${labels.sidebar.buttons.users}" iconSclass="z-icon-user" 
+				onClick="@global-command('open', path='{parts:[{id:users}]}')"
+				selected="@load(vm.selected eq 'users')"/> 
+				<navitem label="${labels.sidebar.buttons.security}" iconSclass="z-icon-asterisk" 
+				onClick="@global-command('open', path='{parts:[{id:roles}]}')"
+				selected="@load(vm.selected eq 'roles')"/> 
+				</nav>-->
+
+			<nav label="${labels.sidebar.buttons.reports}"
+				iconSclass="z-icon-file"
+				if="${sec:isGranted('reports')}">
+				<navitem
+					label="${labels.sidebar.buttons.reports_core_cdr}"
+					iconSclass="z-icon-angle-double-right"
+					onClick="@global-command('open', path='{parts:[{id:core_cdr}]}')"
+					selected="@load(vm.selected eq 'core_cdr')" 
+					if="${sec:isGranted('reports.cdr')}"/>
+				<navitem
+					label="${labels.sidebar.buttons.reports_route_cdr}"
+					iconSclass="z-icon-angle-double-right"
+					onClick="@global-command('open', path='{parts:[{id:route_cdr}]}')"
+					selected="@load(vm.selected eq 'route_cdr')"
+					if="${sec:isGranted('reports.cdr')}"/>
+				<navitem
+					label="${labels.sidebar.buttons.reports_queues}"
+					iconSclass="z-icon-angle-double-right"
+					onClick="@global-command('open', path='{parts:[{id:queues_report}]}')"
+					selected="@load(vm.selected eq 'queues_report')" />
+				<navitem
+					label="${labels.sidebar.buttons.reports_operators}"
+					iconSclass="z-icon-angle-double-right"
+					onClick="@global-command('open', path='{parts:[{id:operators_report}]}')"
+					selected="@load(vm.selected eq 'operators_report')" />
+			</nav>
+			<nav label="${labels.sidebar.buttons.ami}"
+				iconSclass="z-icon-th"
+				if="${sec:isGranted('ami')}">
+				<navitem label="${labels.sidebar.buttons.channels}"
+					iconSclass="z-icon-angle-double-right"
+					onClick="@global-command('open', path='{parts:[{id:channels}]}')"
+					selected="@load(vm.selected eq 'channels')" />
+				<navitem label="${labels.sidebar.buttons.peers}"
+					iconSclass="z-icon-angle-double-right"
+					onClick="@global-command('open', path='{parts:[{id:peers}]}')"
+					selected="@load(vm.selected eq 'peers')" />
+			</nav>
+			<nav label="${labels.sidebar.buttons.users}"
+				iconSclass="z-icon-user"
+				if="${sec:isGranted('users')}">
+				<navitem label="${labels.sidebar.buttons.users_list}"
+					iconSclass="z-icon-angle-double-right"
+					onClick="@global-command('open', path='{parts:[{id:users}]}')"
+					selected="@load(vm.selected eq 'users')" />
+				<navitem label="${labels.sidebar.buttons.security}"
+					iconSclass="z-icon-angle-double-right"
+					onClick="@global-command('open', path='{parts:[{id:roles}]}')"
+					selected="@load(vm.selected eq 'roles')" />
+			</nav>
+			<nav label="${labels.sidebar.buttons.globals}"
+				iconSclass="z-icon-wrench"
+				if="${sec:isGranted('globals')}">
+				<navitem label="${labels.sidebar.buttons.variables}"
+					iconSclass="z-icon-angle-double-right"
+					onClick="@global-command('open', path='{parts:[{id:global_variables}]}')"
+					selected="@load(vm.selected eq 'global_variables')" />
+			</nav>
+			<navitem label="${labels.sidebar.buttons.logs}"
+				iconSclass="z-icon-list-alt"
+				onClick="@global-command('open', path='{parts:[{id:logs}]}')"
+				selected="@load(vm.selected eq 'logs')" 
+				if="${sec:isGranted('logs')}"/>
+		</navbar>
+		<!-- Toggler -->
+		<!-- 
+			<div sclass="sidebar-collapse">
+			
+			<a id="toggler" iconSclass="z-icon-angle-double-left">
+			<attribute name="onClick">
+			<![CDATA[
+			if (navbar.isCollapsed())
+			{
+			sidebar.setSclass("sidebar");
+			navbar.setCollapsed(false);
+			toggler.setIconSclass("z-icon-angle-double-left");
+			}
+			else 
+			{
+			sidebar.setSclass("sidebar sidebar-min");
+			navbar.setCollapsed(true);
+			toggler.setIconSclass("z-icon-angle-double-right");
+			}
+			Clients.resize(sidebar.getParent().getParent());
+			]]>
+			</attribute>
+			</a>
+			
+			</div>
+		-->
+	</vlayout>
+</zk>

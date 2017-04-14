@@ -1,0 +1,217 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<databaseChangeLog xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+				   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+				   xmlns:ext="http://www.liquibase.org/xml/ns/dbchangelog-ext"
+    			   xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.0.xsd
+    								   http://www.liquibase.org/xml/ns/dbchangelog-ext http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-ext.xsd">
+    							
+    <changeSet id="1" author="i.leontyev@gmail.com" runOnChange="true" context="test" dbms="postgresql">
+		<createProcedure>
+			DROP FUNCTION IF EXISTS voip_queue_save(queue_entry, integer);
+		
+			CREATE OR REPLACE FUNCTION voip_queue_save(p_entry queue_entry, p_user_id integer DEFAULT NULL::integer)
+			  RETURNS queue_entry AS
+			$BODY$
+			DECLARE
+				p_id integer;
+			BEGIN
+			
+			IF p_entry.id > 0 THEN
+				p_id = p_entry.id;
+			    
+			    UPDATE queue SET
+			    	music_on_hold = p_entry.music_on_hold,
+			        announce = p_entry.announce,
+			        announce_frequency = p_entry.announce_frequency,
+			        context_id = h_select_value(p_entry.context_id),
+			        strategy_id = h_select_value(p_entry.strategy_id),
+			        timeout = p_entry.timeout,
+			        call_retry = p_entry.call_retry,
+			        weight = p_entry.weight,
+			        wrapup_time = p_entry.wrapup_time,
+			        max_length = p_entry.max_length,
+			        service_level = p_entry.service_level,
+			        member_delay = p_entry.member_delay
+			    WHERE id = p_id;
+			ELSE
+				INSERT INTO queue 
+			    	(
+			        "name",
+			        music_on_hold, 
+			        announce, 
+			        announce_frequency, 
+			        context_id, 
+			        strategy_id, 
+			        timeout, 
+			        call_retry, 
+			        weight, 
+			        wrapup_time, 
+			        max_length,
+			        service_level,
+			        member_delay)
+			        VALUES
+			        (p_entry.name, 
+			        p_entry.music_on_hold, 
+			        p_entry.announce, 
+			        p_entry.announce_frequency, 
+			        h_select_value(p_entry.context_id),
+			        h_select_value(p_entry.strategy_id),
+			        --p_entry.strategy_id,
+			        p_entry.timeout,
+			        p_entry.call_retry,
+			        p_entry.weight,
+			        p_entry.wrapup_time,
+			        p_entry.max_length,
+			        p_entry.service_level,
+			        p_entry.member_delay) RETURNING id INTO p_id;
+			END IF;
+			DELETE FROM queue_joinempty WHERE queue_id = p_id;
+			DELETE FROM queue_leavewhenempty WHERE queue_id = p_id;
+			
+			IF array_ndims(p_entry.join_empty) IS NOT NULL THEN
+				FOR i IN array_lower(p_entry.join_empty, 1)..array_upper(p_entry.join_empty, 1) LOOP
+				    IF p_entry.join_empty[i].selected THEN
+			    		INSERT INTO queue_joinempty (condition_id, queue_id)
+			        		VALUES (p_entry.join_empty[i].id, p_id);
+			        END IF;
+			    END LOOP;
+			END IF;
+			
+			IF array_ndims(p_entry.leave_when_empty) IS NOT NULL THEN
+				FOR i IN array_lower(p_entry.leave_when_empty, 1)..array_upper(p_entry.leave_when_empty, 1) LOOP
+				    IF p_entry.leave_when_empty[i].selected THEN
+			    		INSERT INTO queue_leavewhenempty (condition_id, queue_id)
+			        		VALUES (p_entry.leave_when_empty[i].id, p_id);
+			        END IF;
+			    END LOOP;
+			END IF;
+			
+			RETURN voip_queue_save(p_id);
+			END;
+			$BODY$
+			LANGUAGE plpgsql VOLATILE;
+    	</createProcedure>
+    	<sql>
+            ALTER FUNCTION voip_queue_save(queue_entry, integer) OWNER TO ${jdbc.username};
+        </sql>
+        <rollback>
+        	DROP FUNCTION voip_queue_save(queue_entry, integer);
+        </rollback>
+    </changeSet>
+    
+ 	<changeSet id="2" author="i.leontyev@gmail.com" runOnChange="true" context="test" dbms="postgresql">
+		<createProcedure>
+			DROP FUNCTION IF EXISTS voip_queue_get(integer, boolean);
+			
+			CREATE OR REPLACE FUNCTION voip_queue_get(p_id integer, p_light boolean DEFAULT false)
+			  RETURNS queue_entry AS
+			$BODY$
+			DECLARE
+				p queue_entry;
+			    p_rec record;
+			BEGIN
+				IF p_id IS NOT NULL THEN
+					SELECT 
+						q.*,
+					    qs.name AS strategy_name,
+					    c.name AS context_name
+					    INTO p_rec
+					FROM queue q 
+						LEFT JOIN context c ON q.context_id = c.id
+					    INNER JOIN queue_strategy qs ON q.strategy_id = qs.id
+					WHERE q.id = p_id;
+					
+					IF NOT FOUND THEN
+						RAISE EXCEPTION 'RESULT:20;';
+					END IF;
+					
+					p.id = p_rec.id;
+					p.name = p_rec.name;
+					p.music_on_hold = p_rec.music_on_hold;
+					p.announce = p_rec.announce;
+					p.announce_frequency = p_rec.announce_frequency;
+					p.timeout = p_rec.timeout;
+					p.call_retry = p_rec.call_retry;
+					p.weight = p_rec.weight;
+					p.wrapup_time = p_rec.wrapup_time;
+					p.max_length = p_rec.max_length;
+					p.service_level = p_rec.service_level;
+					p.member_delay = p_rec.member_delay;
+					p.strategy_id = ARRAY(SELECT (v.id, v.name, CASE WHEN p_rec.strategy_id = v.id THEN TRUE ELSE FALSE END)::select_entry FROM queue_strategy v);
+					p.context_id = ARRAY(SELECT (v.id, v.name, CASE WHEN p_rec.context_id = v.id THEN TRUE ELSE FALSE END)::select_entry FROM context v);
+					p.join_empty = ARRAY( SELECT (c.id, c."name", CASE WHEN ac.id IS NOT NULL THEN TRUE ELSE FALSE END)::select_entry FROM queue_member_condition c 
+					    	LEFT JOIN queue_joinempty ac ON c.id = ac.condition_id AND ac.queue_id = p_id);
+					p.leave_when_empty = ARRAY( SELECT (c.id, c."name", CASE WHEN ac.id IS NOT NULL THEN TRUE ELSE FALSE END)::select_entry FROM queue_member_condition c 
+					    	LEFT JOIN queue_leavewhenempty ac ON c.id = ac.condition_id AND ac.queue_id = p_id);
+				ELSE
+					p.id = 0;
+					p.strategy_id = ARRAY(SELECT (v.id, v.name, FALSE)::select_entry FROM queue_strategy v);
+					p.context_id = ARRAY(SELECT (v.id, v.name, FALSE)::select_entry FROM context v);
+					p.join_empty = ARRAY(SELECT (c.id, c.name, FALSE)::select_entry FROM queue_member_condition c 
+					    	LEFT JOIN queue_joinempty ac ON c.id = ac.condition_id);
+					p.leave_when_empty = ARRAY(SELECT (c.id, c.name, FALSE)::select_entry FROM queue_member_condition c 
+					    	LEFT JOIN queue_leavewhenempty ac ON c.id = ac.condition_id);
+				END IF;
+				RETURN p;
+			END;
+			$BODY$
+			  LANGUAGE plpgsql VOLATILE;
+    	</createProcedure>
+    	<sql>
+            ALTER FUNCTION voip_queue_get(integer, boolean) OWNER TO ${jdbc.username};
+        </sql>
+        <rollback>
+        	DROP FUNCTION voip_queue_get(integer, boolean);
+        </rollback>
+    </changeSet>
+     
+ 	<changeSet id="3" author="i.leontyev@gmail.com" runOnChange="true" context="test" dbms="postgresql">
+		<createProcedure>
+			DROP FUNCTION IF EXISTS voip_queue_get_list(in p_filter result_filter);
+		
+			CREATE OR REPLACE FUNCTION voip_queue_get_list(p_filter result_filter)
+			RETURNS SETOF queue_entry AS
+			$BODY$
+			DECLARE
+				p_rec record;
+			BEGIN
+				FOR p_rec IN SELECT id FROM queue LOOP
+					RETURN NEXT voip_queue_get(p_rec.id);
+				END LOOP;
+			END;
+			$BODY$
+			LANGUAGE plpgsql VOLATILE;
+    	</createProcedure>
+    	<sql>
+            ALTER FUNCTION voip_queue_get_list(in p_filter result_filter) OWNER TO ${jdbc.username};
+        </sql>
+        <rollback>
+        	DROP FUNCTION voip_queue_get_list(in p_filter result_filter);
+        </rollback>
+    </changeSet>     
+     
+ 	<changeSet id="4" author="i.leontyev@gmail.com" runOnChange="true" context="test" dbms="postgresql">
+		<createProcedure>
+			DROP FUNCTION IF EXISTS voip_queue_delete(p_id integer);
+			
+			CREATE OR REPLACE FUNCTION voip_queue_delete(p_id integer)
+			RETURNS void AS
+			$BODY$
+				BEGIN
+					DELETE FROM queue q where q.id = p_id;
+				END;
+			$BODY$
+			LANGUAGE plpgsql VOLATILE;
+    	</createProcedure>
+    	<sql>
+            ALTER FUNCTION voip_queue_delete(integer) OWNER TO ${jdbc.username};
+        </sql>
+        <rollback>
+        	DROP FUNCTION voip_queue_delete(integer);
+        </rollback>
+    </changeSet>
+       
+     
+
+ 
+</databaseChangeLog>

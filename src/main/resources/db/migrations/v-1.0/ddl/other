@@ -1,0 +1,46 @@
+!DO NOT WORKED
+CREATE OR REPLACE FUNCTION create_order_by_clause(p_prefix text, p_order refcursor DEFAULT NULL::refcursor)
+  RETURNS character varying AS
+$BODY$
+			DECLARE
+			   rec   record;
+			   res 	 text:='';
+			   BEGIN
+			     IF (p_order IS NOT NULL) THEN
+				LOOP
+				    FETCH p_order INTO rec;
+				    EXIT WHEN NOT FOUND;
+				    res:= res || '.' || rec::text;
+				END LOOP;
+			     END IF;
+			   RETURN res;
+			   END;
+			$BODY$
+  LANGUAGE plpgsql STABLE STRICT
+  COST 100;
+ALTER FUNCTION create_order_by_clause(text, refcursor)
+  OWNER TO postgres;
+  
+  CREATE OR REPLACE FUNCTION user_find(IN p_login text, IN p_start_index integer DEFAULT 100, IN p_count integer DEFAULT 0, IN p_order refcursor DEFAULT NULL::refcursor)
+  RETURNS TABLE(login character varying, password character varying, first_name character varying, last_name character varying, expired boolean, blocked boolean, credentials_expired boolean, addresses address[], permissions permission[]) AS
+$BODY$
+			DECLARE
+			   BEGIN
+			     RETURN QUERY
+			     SELECT * FROM (
+				     SELECT ust.login, ust.password, ust.first_name, ust.last_name, ust.expired, ust.blocked, ust.credentials_expired,
+				     (SELECT array_agg((ua.id, ua.city, ua.street, ua.house, ua.flat, ua.owner_id)::address) from user_get_addresses(ust.login) as ua) as addresses,
+				     (SELECT array_agg((up.id, up.name, up.description)::permission) from user_get_permissions(ust.login) as up) as permissions
+				     FROM "user" ust
+				     WHERE ust.login LIKE p_login || '%'
+				     GROUP BY ust.login, ust.password, ust.first_name, ust.last_name, ust.expired, ust.blocked, ust.credentials_expired
+				     LIMIT p_start_index OFFSET p_count
+			     ) AS RESULT ORDER BY RESULT.login DESC;
+			   END;
+			$BODY$
+  LANGUAGE plpgsql STABLE STRICT
+  COST 100
+  ROWS 1000;
+ALTER FUNCTION user_find(text, integer, integer, refcursor)
+  OWNER TO postgres;
+  

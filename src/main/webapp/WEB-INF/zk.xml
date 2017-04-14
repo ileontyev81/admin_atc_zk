@@ -1,0 +1,147 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<zk>
+	<!-- Listener to make sure servlet thread and ZK event thread got the same ThreadLocal values -->
+	<!-- user web request inside zkoss aplication has the same values - same threadLocal -->
+	<listener>
+		<description>ThreadLocal Synchronization Listener</description>
+		<listener-class>
+			org.zkoss.zkplus.util.ThreadLocalListener
+		</listener-class>
+	</listener>
+	<!-- ThreadLocal variables you want to sync -->
+	<!-- class1=field1,field2,...; -->
+	<!-- RequestContextHolder - if use Spring's bean as scope="session" -->
+	<preference>
+		<name>ThreadLocal</name>
+		<value>
+			org.springframework.security.context.ThreadLocalSecurityContextHolderStrategy=contextHolder;
+			org.springframework.web.context.request.RequestContextHolder=requestAttributesHolder,inheritableRequestAttributesHolder;
+		</value>
+	</preference>
+	
+	<library-property>
+		<name>org.zkoss.zkmax.tablet.ui.disabled</name>
+		<value>true</value>
+	</library-property>
+
+    <!-- !asyncSupported: springSecurityFilterChain zkoss bug error -->
+    <library-property>
+        <name>org.zkoss.zkmax.ui.comet.async.disabled</name>
+        <value>true</value>
+    </library-property>
+
+    <device-config>
+        <device-type>ajax</device-type>
+        <server-push-class>org.zkoss.zkmax.ui.comet.CometServerPush</server-push-class>
+    </device-config>
+    <!-- on demand DOM model creation -->
+    <!-- used for listboxes, grids with huge data(all data stored in memory on server side) -->
+    <!--
+	<library-property>
+		<name>org.zkoss.zul.listbox.rod</name>
+		<value>true</value>
+	</library-property>
+    -->
+<!-- 
+	<library-property>
+	    <name>org.zkoss.web.preferred.timeZone</name>
+	    <value>GMT+3</value>
+	</library-property>
+ -->	
+	<session-config>
+		<device-type>ajax</device-type>
+		<!-- <timeout-uri>/timeout.zul</timeout-uri> -->
+		<timeout-uri></timeout-uri> <!-- An empty URL can cause the browser to reload the same URL -->
+	</session-config>
+
+	 <!-- ajax requests listener errors -->
+	<error-page>
+    	<exception-type>java.lang.Throwable</exception-type>   
+		<location>/content/error/general_error.zul</location>
+	</error-page>
+
+    <!--
+	<session-config>
+	    <session-timeout>1800</session-timeout>    
+	    <device-type>ajax</device-type>   
+	    <timeout-uri>/logout</timeout-uri>   
+	</session-config>
+    -->
+
+	<!-- 
+	<listener>
+		<description>ZK Exception Translation Listener</description>
+		<listener-class>org.zkoss.spring.security.ui.ZkExceptionTranslationListener</listener-class>
+	</listener>
+	 -->
+	 <!-- 
+	<preference>
+		<name>org.zkoss.zul.Window.defaultActionOnShow</name>
+		<value></value>
+	</preference> 
+	 -->
+	 
+	 <!-- Optional -->
+	<listener>
+		<description> Mointor the statistic</description>
+		<listener-class>org.zkoss.zk.ui.util.Statistic</listener-class>
+	</listener>
+
+	<system-config>
+	    <label-location>/WEB-INF/classes/locales/messages.properties</label-location>
+	</system-config>
+
+	<library-property>
+	    <name>org.zkoss.web.preferred.locale</name>
+	    <value>${web.preferred.locale}</value>
+	</library-property>
+
+	<library-property>
+	    <name>org.zkoss.bind.appConverters</name>
+	    <value>
+			selectEntryArrayConverter=atc.gui.admin.zk.converter.ui.SelectEntryArrayConverter
+		</value>
+	</library-property>
+
+	<client-config>
+		<debug-js>true</debug-js>
+	</client-config>
+	
+	<library-property>
+		<name>org.zkoss.web.classWebResource.cache</name>
+		<value>false</value>
+	</library-property>
+
+    <!--silvertail, sapphire-->
+    <!--
+	<library-property>
+	    <name>org.zkoss.theme.preferred</name>
+	    <value>atlantic</value>
+	</library-property>
+    -->
+	<!-- bootstrap components mold -->
+	<library-property>
+		<name>org.zkoss.zul.Button.mold</name>
+		<value>bs</value>
+	</library-property>
+	<library-property>
+		<name>org.zkoss.zul.Menupopup.mold</name>
+		<value>bs</value>
+	</library-property>
+
+	<library-property>
+		<name>org.zkoss.zul.Paging.mold</name>
+		<value>bs</value>
+	</library-property>
+	<library-property>
+		<name>org.zkoss.zul.Panel.mold</name>
+		<value>bs</value>
+	</library-property>
+
+	<!-- ckeditor -->
+    <language-config>
+        <addon-uri>/META-INF/ckez-bind-addon.xml</addon-uri>
+        <addon-uri>/META-INF/ace-editor-addon.xml</addon-uri>
+        <addon-uri>/META-INF/soundmanager-addon.xml</addon-uri>
+    </language-config>
+</zk>

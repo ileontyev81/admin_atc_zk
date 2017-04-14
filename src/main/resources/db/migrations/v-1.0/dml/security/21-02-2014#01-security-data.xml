@@ -1,0 +1,286 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<databaseChangeLog xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+				   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+				   xmlns:ext="http://www.liquibase.org/xml/ns/dbchangelog-ext"
+    			   xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.0.xsd
+    								   http://www.liquibase.org/xml/ns/dbchangelog-ext http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-ext.xsd">
+
+    <!-- User roles -->
+   	<changeSet id="1" author="i.leontyev@gmail.com" context="test">
+		<insert tableName="role">
+            <column name="id">1</column>
+            <column name="name">ROLE_ADMIN</column>
+            <column name="parent_role_id">null</column>
+            <column name="description">Can manage users, can''t see, manage users personal information</column>
+        </insert>
+        <rollback>
+        	DELETE FROM role WHERE id = 1; 
+        </rollback>        
+    </changeSet>
+   	<changeSet id="2" author="i.leontyev@gmail.com" context="test">
+		<insert tableName="role">
+            <column name="id">2</column>
+            <column name="name">ROLE_SUPERADMIN</column>
+            <column name="parent_role_id">1</column>
+            <column name="description">Full access</column>
+        </insert>
+        <rollback>
+        	DELETE FROM role WHERE id = 2; 
+        </rollback>        
+    </changeSet>
+   	<changeSet id="3" author="i.leontyev@gmail.com" context="test">
+		<insert tableName="role">
+            <column name="id">3</column>
+            <column name="name">ROLE_USER</column>
+            <column name="parent_role_id">null</column>
+            <column name="description">Can manage only his personal information</column>
+        </insert>
+        <rollback>
+        	DELETE FROM role WHERE id = 3; 
+        </rollback>        
+    </changeSet>
+
+	<!-- User list -->
+	<changeSet id="4" author="i.leontyev@gmail.com" context="test">
+		 <insert tableName="user">
+            <column name="id">1</column>
+            <column name="login">admin</column>
+            <column name="password">21232f297a57a5a743894a0e4a801fc3</column>
+            <column name="firstname">Фома</column>
+            <column name="lastname">Фомич</column>
+            <column name="expired">FALSE</column>
+            <column name="blocked">FALSE</column>
+            <column name="credentials_expired">FALSE</column>
+            <column name="role_id">1</column> <!-- ??? -->
+        </insert>
+        <rollback>
+        	DELETE FROM "user" WHERE id = 1; 
+        </rollback>
+    </changeSet>
+    <changeSet id="5" author="i.leontyev@gmail.com" context="test">
+    	<insert tableName="user">
+            <column name="id">2</column>
+            <column name="login">superadmin</column>
+            <column name="password">17c4520f6cfd1ab53d8745e84681eb49</column>
+            <column name="firstname">Петр</column>
+            <column name="lastname">Петрович</column>
+            <column name="expired">FALSE</column>
+            <column name="blocked">FALSE</column>
+            <column name="credentials_expired">FALSE</column>
+            <column name="role_id">2</column>
+        </insert>
+        <rollback>
+        	DELETE FROM "user" WHERE id = 2; 
+        </rollback>
+    </changeSet>
+    <changeSet id="6" author="i.leontyev@gmail.com" context="test">
+    	<insert tableName="user">
+            <column name="id">3</column>
+            <column name="login">demo</column>
+            <column name="password">fe01ce2a7fbac8fafaed7c982a04e229</column>
+            <column name="firstname">Василий</column>
+            <column name="lastname">Иванович</column>
+            <column name="expired">FALSE</column>
+            <column name="blocked">FALSE</column>
+            <column name="credentials_expired">FALSE</column>
+            <column name="role_id">3</column>
+        </insert>
+        <rollback>
+        	DELETE FROM "user" WHERE id = 3;
+        </rollback>
+    </changeSet>
+
+	<!-- User addresses -->
+	<changeSet id="7" author="i.leontyev@gmail.com" context="test">
+		<insert tableName="address">
+            <column name="id">1</column>
+            <column name="city">Kaluga</column>
+            <column name="street">Suvorov str.</column>
+            <column name="house">8</column>
+            <column name="flat">122</column>
+            <column name="owner_id">1</column>
+        </insert>
+        <rollback>
+        	DELETE FROM address WHERE id = 1; 
+        </rollback>
+    </changeSet>
+	<changeSet id="8" author="i.leontyev@gmail.com" context="test">
+		<insert tableName="address">
+			<column name="id">2</column>
+            <column name="city">Tila</column>
+            <column name="street">Kruglov str.</column>
+            <column name="house">45</column>
+            <column name="flat">2</column>
+            <column name="owner_id">2</column>
+        </insert>
+        <rollback>
+        	DELETE FROM address WHERE id = 2; 
+        </rollback>        
+    </changeSet>
+	<changeSet id="9" author="i.leontyev@gmail.com" context="test">
+		<insert tableName="address">
+			<column name="id">3</column>
+            <column name="city">ChinaTown</column>
+            <column name="street">Li hui van cin hu dzi bao</column>
+            <column name="house">12120</column>
+            <column name="flat">234</column>
+            <column name="owner_id">2</column>
+        </insert>
+        <rollback>
+        	DELETE FROM address WHERE id = 3; 
+        </rollback>        
+    </changeSet>
+	<changeSet id="10" author="i.leontyev@gmail.com" context="test">
+		<insert tableName="address">
+			<column name="id">4</column>
+            <column name="city">Moscow</column>
+            <column name="street">Pereeulok hrenova</column>
+            <column name="house">100</column>
+            <column name="flat">78</column>
+            <column name="owner_id">3</column>
+        </insert>
+        <rollback>
+        	DELETE FROM address WHERE id = 4; 
+        </rollback>        
+    </changeSet>
+    
+    <!-- User permissions -->
+   	<changeSet id="11" author="i.leontyev@gmail.com" context="test">
+		<insert tableName="permission">
+            <column name="id">1</column>
+            <column name="name">Create</column>
+            <column name="description">Can create something</column>
+        </insert>
+        <rollback>
+        	DELETE FROM permission WHERE id = 1; 
+        </rollback>        
+	</changeSet>
+   	<changeSet id="12" author="i.leontyev@gmail.com" context="test">
+		<insert tableName="permission">
+            <column name="id">2</column>
+            <column name="name">Delete</column>
+            <column name="description">Can delete something</column>
+        </insert>
+        <rollback>
+        	DELETE FROM permission WHERE id = 2; 
+        </rollback>        
+	</changeSet>
+   	<changeSet id="13" author="i.leontyev@gmail.com" context="test">
+		<insert tableName="permission">
+            <column name="id">3</column>
+            <column name="name">Edit</column>
+            <column name="description">Can edit something</column>
+        </insert>
+        <rollback>
+        	DELETE FROM permission WHERE id = 3; 
+        </rollback>        
+	</changeSet>
+   	<changeSet id="14" author="i.leontyev@gmail.com" context="test">
+		<insert tableName="permission">
+            <column name="id">4</column>
+            <column name="name">View</column>
+            <column name="description">Can view pages</column>
+        </insert>
+        <rollback>
+        	DELETE FROM permission WHERE id = 4; 
+        </rollback>        
+	</changeSet>
+   	<changeSet id="15" author="i.leontyev@gmail.com" context="test">
+		<insert tableName="permission">
+            <column name="id">5</column>
+            <column name="name">ViewStatistic</column>
+            <column name="description">Can view system use statistic</column>
+        </insert>
+        <rollback>
+        	DELETE FROM permission WHERE id = 5; 
+        </rollback>        
+	</changeSet>
+        
+    <!-- Role to User mapping data -->
+   	<changeSet id="16" author="i.leontyev@gmail.com" context="test">
+		<insert tableName="role_member">
+		   <column name="id">1</column>
+           <column name="role_id">1</column>
+           <column name="user_id">1</column>
+       </insert>
+        <rollback>
+        	DELETE FROM role_member WHERE id = 1; 
+        </rollback>
+	</changeSet>
+   	<changeSet id="17" author="i.leontyev@gmail.com" context="test">
+		<insert tableName="role_member">
+			<column name="id">2</column>
+            <column name="role_id">2</column>
+            <column name="user_id">2</column>
+        </insert>
+        <rollback>
+        	DELETE FROM role_member WHERE id = 2; 
+        </rollback>        
+	</changeSet>
+   	<changeSet id="18" author="i.leontyev@gmail.com" context="test">
+		<insert tableName="role_member">
+			<column name="id">3</column>
+            <column name="role_id">3</column>
+            <column name="user_id">3</column>
+        </insert>
+        <rollback>
+        	DELETE FROM role_member WHERE id = 3; 
+        </rollback>                
+	</changeSet>
+    
+    <!-- Role to Permission mapping data -->
+    <!-- Admin -->
+	<changeSet id="19" author="i.leontyev@gmail.com" context="test">
+		<insert tableName="role_permission">
+			<column name="id">1</column>
+            <column name="role_id">1</column>
+            <column name="permission_id">1</column>
+        </insert>
+        <rollback>
+        	DELETE FROM role_permission WHERE id = 1; 
+        </rollback>        
+    </changeSet>
+	<changeSet id="20" author="i.leontyev@gmail.com" context="test">
+		<insert tableName="role_permission">
+            <column name="id">2</column>
+            <column name="role_id">1</column>
+            <column name="permission_id">2</column>
+        </insert>
+        <rollback>
+        	DELETE FROM role_permission WHERE id = 2; 
+        </rollback>        
+    </changeSet>
+	<changeSet id="21" author="i.leontyev@gmail.com" context="test">
+		<insert tableName="role_permission">
+			<column name="id">3</column>
+            <column name="role_id">1</column>
+            <column name="permission_id">3</column>
+        </insert>
+        <rollback>
+        	DELETE FROM role_permission WHERE id = 3; 
+        </rollback>
+	</changeSet>
+	<!-- Superadmin -->
+	<changeSet id="22" author="i.leontyev@gmail.com" context="test">
+		<insert tableName="role_permission">
+            <column name="id">4</column>
+            <column name="role_id">2</column>
+            <column name="permission_id">5</column>
+        </insert>
+        <rollback>
+        	DELETE FROM role_permission WHERE id = 4; 
+        </rollback>        
+    </changeSet>
+    <!-- User -->
+	<changeSet id="23" author="i.leontyev@gmail.com" context="test">
+		<insert tableName="role_permission">
+            <column name="id">5</column>
+            <column name="role_id">3</column>
+            <column name="permission_id">4</column>
+        </insert>
+        <rollback>
+        	DELETE FROM role_permission WHERE id = 5; 
+        </rollback>
+    </changeSet>
+
+</databaseChangeLog>

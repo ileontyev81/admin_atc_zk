@@ -1,0 +1,79 @@
+<?taglib uri="http://www.zkoss.org/dsp/web/core" prefix="c"?>
+<zk>
+   	<div vflex="1" hflex="1"
+		 apply="org.zkoss.bind.BindComposer"
+		 viewModel="@id('vm') @init('atc.gui.admin.zk.viewmodel.action.ActionVM')"
+		 validationMessages="@id('vmsgs')">
+		 
+		<div sclass="page-header" style="padding-bottom: 8px; margin-bottom:0px;">
+			<label value="${c:l(c:cat3('view.action_entry.', vm.action.isPersisted() ? 'edit_action' : 'add_action', '.caption'))}" 
+				   sclass="page-header" style="font-size:30px; border-bottom:0px;"  hflex="1"/>
+		</div>
+
+		<panel>
+			<panelchildren>
+				<include src="uitemplates/edit_entry_ex.zul" vflex="1"
+				     entity="@ref(vm.action)"
+				     submitCommand="@ref('saveAction')"/>
+				<button label="Save" sclass="btn btn-primary" onClick="@command('saveAction')"/>
+	 		</panelchildren>
+ 		</panel>
+ 		
+ 		<!-- <zk if='${vm.action.isPersisted()}'>
+ 		<panel>
+		<panelchildren>
+ 		<div sclass="page-header" style="margin-bottom:8px;">
+ 		<label value="Directions" sclass="page-header" style="font-size:20px; border-bottom:0px;"  hflex="1"/>
+ 		</div>
+ 		<div>
+ 		<button class="btn btn-primary btn-sm" vflex="1" label="Add Direction" onClick="@command('goAddDirection')"/>
+ 		</div>
+	 		<include src="uitemplates/list_entry_ex.zul"
+					 entityList="@ref(vm.directionList)"
+					 entityClass="@ref(vm.directionClass)"
+					 selectedEntity="@ref(vm.directionSelected)"
+					 menuId="@ref('directionListMenu')"
+					 editCommand="@ref('editDirection')"
+					 deleteCommand="@ref('deleteDirection')"/>
+			<menupopup id="directionListMenu">
+		        <menuitem label="Edit" onClick="@command('editDirection')"/>
+		        <menuitem label="Delete" onClick="@command('deleteDirection')"/>
+		    </menupopup>
+	    </panelchildren>
+ 		</panel>
+ 		
+ 		<panel>
+		<panelchildren>
+ 		<div sclass="page-header" style="margin-bottom:8px;">
+ 			<label value="IP Addresses" sclass="page-header" style="font-size:20px; border-bottom:0px;"  hflex="1"/>
+ 		</div>
+ 		</panelchildren>
+ 		</panel>
+ 		
+ 		<panel>
+		<panelchildren>
+ 		<div sclass="page-header" style="margin-bottom:8px;">
+ 			<label value="Date And Time" sclass="page-header" style="font-size:20px; border-bottom:0px;"  hflex="1"/>
+ 		</div>
+ 		</panelchildren>
+ 		</panel>
+ 		
+ 		<panel>
+		<panelchildren>
+ 		<div sclass="page-header" style="margin-bottom:8px;">
+ 			<label value="Accounts" sclass="page-header" style="font-size:20px; border-bottom:0px;"  hflex="1"/>
+ 		</div>
+ 		</panelchildren>
+ 		</panel>
+ 		
+ 		<panel>
+		<panelchildren>
+ 		<div sclass="page-header" style="margin-bottom:8px;">
+ 			<label value="Variables" sclass="page-header" style="font-size:20px; border-bottom:0px;"  hflex="1"/>
+ 		</div>
+ 		</panelchildren>
+ 		</panel>
+	    </zk> -->
+	</div>	
+	
+</zk>

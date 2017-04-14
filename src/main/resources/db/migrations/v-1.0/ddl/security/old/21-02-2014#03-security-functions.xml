@@ -1,0 +1,152 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<databaseChangeLog xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+				   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+				   xmlns:ext="http://www.liquibase.org/xml/ns/dbchangelog-ext"
+    			   xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.1.xsd
+    								   http://www.liquibase.org/xml/ns/dbchangelog-ext http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-ext.xsd">
+
+	<changeSet id="1" author="i.leontyev@gmail.com" runOnChange="true" context="test" dbms="postgresql">
+		<createProcedure>
+			DROP FUNCTION IF EXISTS voip_address_get_list(p_login text);
+		
+			CREATE OR REPLACE FUNCTION voip_address_get_list(p_login text) 
+			RETURNS TABLE(id integer, city character varying, street character varying, house integer, flat integer, owner_id integer)
+		    LANGUAGE plpgsql STABLE STRICT
+		    AS 
+		    $_$
+			DECLARE
+			   BEGIN
+			     RETURN QUERY 
+				SELECT adrt.id, adrt.city, adrt.street, adrt.house, adrt.flat, adrt.owner_id
+				FROM "user" us 
+				LEFT JOIN address adrt ON adrt.owner_id = us.id
+			        WHERE us.login = $1
+			        ORDER BY adrt.id;
+			   END;
+			$_$;
+    	</createProcedure>
+    	<sql>
+            ALTER FUNCTION voip_address_get_list(p_login text) OWNER TO ${jdbc.username};
+        </sql>
+        <rollback>
+        	DROP FUNCTION voip_address_get_list(text);
+        </rollback>
+    </changeSet>
+    
+	<changeSet id="2" author="i.leontyev@gmail.com" runOnChange="true" context="test" dbms="postgresql">
+		<createProcedure>
+			DROP FUNCTION IF EXISTS voip_permission_get_list(p_login text);
+		
+			CREATE OR REPLACE FUNCTION voip_permission_get_list(p_login text) RETURNS SETOF permission
+		    LANGUAGE plpgsql STABLE STRICT
+		    AS $_$
+			DECLARE
+			   BEGIN
+				RETURN QUERY 
+				WITH RECURSIVE tmp_role(id, name, parent_role_id, description) AS (
+				    SELECT id, name, parent_role_id, description FROM role WHERE id IN (
+													select r.id
+												    from "user" u, role r, role_member rm
+												    where u.login = $1
+												    and u.id = rm.user_id
+												    and r.id = rm.role_id)
+					UNION ALL
+					SELECT p.id, p.name, p.parent_role_id, p.description
+					FROM tmp_role tr, role p
+					WHERE p.id = tr.parent_role_id
+				)
+				SELECT p.id, p.name, p.description as permissions
+				FROM tmp_role tr, role_permission rp, permission p
+				WHERE tr.id = rp.role_id AND p.id = rp.permission_id
+				GROUP BY p.id, p.name, p.description;
+			   END;
+			$_$;
+    	</createProcedure>
+    	<sql>
+            ALTER FUNCTION voip_permission_get_list(p_login text) OWNER TO ${jdbc.username};
+        </sql>
+        <rollback>
+        	DROP FUNCTION voip_permission_get_list(text);
+    	</rollback>
+    </changeSet>
+    
+    <changeSet id="3" author="i.leontyev@gmail.com" runOnChange="true" context="test" dbms="postgresql">
+		<createProcedure>
+			DROP FUNCTION IF EXISTS voip_user_get(p_login text);
+		
+            CREATE OR REPLACE FUNCTION voip_user_get(p_login text)
+		    RETURNS TABLE(login character varying, password character varying, 
+		    			  first_name character varying, last_name character varying, 
+		    			  expired boolean, blocked boolean, credentials_expired boolean, 
+		    			  addresses address[], permissions permission[])
+			LANGUAGE plpgsql STABLE STRICT
+			AS $_$
+			DECLARE
+			   BEGIN
+			     RETURN QUERY
+			     SELECT ust.login, ust.password, ust.first_name, ust.last_name, ust.expired, ust.blocked, ust.credentials_expired,
+			     (SELECT array_agg((ua.id, ua.city, ua.street, ua.house, ua.flat, ua.owner_id)::address) from voip_address_get_list($1) as ua) as addresses,
+			     (SELECT array_agg((up.id, up.name, up.description)::permission) from voip_permission_get_list($1) as up) as permissions
+			          FROM "user" ust
+			          WHERE ust.login = $1
+			          GROUP BY ust.login, ust.password, ust.first_name, ust.last_name, ust.expired, ust.blocked, ust.credentials_expired
+			          LIMIT 1;
+			   END;
+			$_$;   
+    	</createProcedure>
+    	<sql>
+            ALTER FUNCTION voip_user_get(p_login text) OWNER TO ${jdbc.username};
+        </sql>
+        <rollback>
+        	DROP FUNCTION voip_user_get(text);
+    	</rollback>        
+    </changeSet>
+    
+    <changeSet id="4" author="i.leontyev@gmail.com" runOnChange="true" context="test" dbms="postgresql">
+		<createProcedure>
+			GET USER BY NAME	   
+    	</createProcedure>
+    	<sql>
+            ALTER FUNCTION voip_user_get(p_login text) OWNER TO ${jdbc.username};
+        </sql>
+        <rollback>
+        	DROP FUNCTION voip_user_get(text);
+    	</rollback>        
+    </changeSet>
+    
+    <changeSet id="5" author="i.leontyev@gmail.com" runOnChange="true" context="test" dbms="postgresql">
+		<createProcedure>
+			DROP FUNCTION IF EXISTS voip_user_get_list(result_filter);
+		
+            CREATE OR REPLACE FUNCTION voip_user_get_list(in p_filter result_filter)
+			  RETURNS SETOF user_entry AS
+			$BODY$
+						DECLARE
+							p_rec record;
+						    p user_entry;
+						BEGIN
+							FOR p_rec IN SELECT 
+							    	a.id
+									FROM user u
+									ORDER BY u.id DESC
+							LOOP
+								RETURN NEXT voip_user_get(p_rec.id);
+							END LOOP;
+						END;
+						$BODY$
+			  LANGUAGE plpgsql VOLATILE
+			  COST 100
+			  ROWS 1000;
+			ALTER FUNCTION voip_user_get_list(result_filter)
+			  OWNER TO postgres;
+ 
+    	</createProcedure>
+    	<sql>
+            ALTER FUNCTION voip_user_get_list(result_filter) OWNER TO ${jdbc.username};
+        </sql>
+        <rollback>
+        	DROP FUNCTION voip_user_get_list(result_filter);
+    	</rollback>        
+    </changeSet>
+    
+</databaseChangeLog>

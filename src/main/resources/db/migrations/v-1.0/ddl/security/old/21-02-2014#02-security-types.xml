@@ -1,0 +1,98 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<databaseChangeLog xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+				   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+				   xmlns:ext="http://www.liquibase.org/xml/ns/dbchangelog-ext"
+    			   xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.0.xsd
+    								   http://www.liquibase.org/xml/ns/dbchangelog-ext http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-ext.xsd">
+
+ 	<changeSet id="1" author="i.leontyev@gmail.com" context="test" dbms="postgresql">
+    	<sql>
+            CREATE TYPE permission_entry AS
+		    (
+		    	id int,
+    			name text,
+    			description text
+		    );
+			ALTER TYPE permission_entry OWNER TO ${jdbc.username};
+        </sql>
+        <rollback>
+           	DROP TYPE permission_entry;
+        </rollback>
+    </changeSet>
+    
+ 	<changeSet id="2" author="i.leontyev@gmail.com" context="test" dbms="postgresql">
+    	<sql>
+            CREATE TYPE address_entry AS
+		    (
+      			id int,
+    			city text,
+    			street text,
+    			house int,
+    			flat int,
+    			owner_id int
+		    );
+			ALTER TYPE address_entry OWNER TO ${jdbc.username};
+        </sql>
+        <rollback>
+           	DROP TYPE address_entry;
+        </rollback>
+    </changeSet>
+    
+ 	<changeSet id="3" author="i.leontyev@gmail.com" context="test" dbms="postgresql">
+    	<sql>
+            CREATE TYPE role_entry AS
+		    (
+    			id int,
+    			name text,
+    			description text,
+    			role_details_id int
+		    );
+			ALTER TYPE role_entry OWNER TO ${jdbc.username};
+        </sql>
+        <rollback>
+           	DROP TYPE role_entry;
+        </rollback>
+    </changeSet>
+    
+   	<changeSet id="4" author="i.leontyev@gmail.com" context="test" dbms="postgresql">
+    	<sql>
+            CREATE TYPE user_entry AS
+		    (
+		    	id int,
+    			login text,
+    			password text,
+    			firstName text,
+    			lastName text,
+    			expired boolean,
+    			blocked boolean,
+    			credentials_expired boolean,
+    			created TIMESTAMP,
+    			role role_entry,
+    			addresses address_entry[]
+		    );
+			ALTER TYPE user_entry OWNER TO ${jdbc.username};
+        </sql>
+        <rollback>
+           	DROP TYPE user_entry;
+        </rollback>
+    </changeSet>
+    
+ 	<changeSet id="5" author="i.leontyev@gmail.com" context="test" dbms="postgresql">
+    	<sql>
+            CREATE TYPE role_details AS
+		    (
+    			id int,
+    			name text,
+    			description text,
+				users user_entry[],	    
+				permissions permission_entry[],	    
+			    parent_role role_entry
+		    );
+			ALTER TYPE role_details OWNER TO ${jdbc.username};
+        </sql>
+        <rollback>
+           	DROP TYPE role_details;
+        </rollback>
+    </changeSet>    							
+    							
+</databaseChangeLog>

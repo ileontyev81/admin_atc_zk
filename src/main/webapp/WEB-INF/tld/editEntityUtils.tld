@@ -1,0 +1,40 @@
+<taglib version="2.0"
+        xmlns="http://java.sun.com/xml/j2ee"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:schemaLocation="http://java.sun.com/xml/ns/j2ee/web-jsptaglibrary_2_0.xsd">
+
+    <tlib-version>1.0</tlib-version>
+    <jsp-version>2.0</jsp-version>
+    <short-name>zulTagsExtention</short-name>
+    <description>
+        This tag library contains several tag extensions used on zul pages to help in some frequently operations.
+    </description>
+    <function>
+        <name>JSR303Validator</name>
+        <function-class>atc.gui.admin.zk.tld.GeneralEdit</function-class>
+        <function-signature>
+    		javax.validation.Validator getAppValidator(java.lang.Class)
+        </function-signature>
+    </function>
+    <function>
+        <name>DigitTextboxValidator</name>
+        <function-class>atc.gui.admin.zk.tld.GeneralEdit</function-class>
+        <function-signature>
+    		javax.validation.Validator getDigitTextboxValidator(int)
+        </function-signature>
+    </function>
+    <function>
+        <name>isDisabled</name>
+        <function-class>atc.gui.admin.zk.tld.GeneralEdit</function-class>
+        <function-signature>
+    		boolean isDisabled(java.lang.reflect.Field, atc.gui.admin.domain.PersistentEntity entity)
+        </function-signature>
+    </function>
+    <function>
+        <name>isDigitField</name>
+        <function-class>atc.gui.admin.zk.tld.GeneralEdit</function-class>
+        <function-signature>
+    		boolean isDigitField(java.lang.reflect.Field)
+        </function-signature>
+    </function>
+</taglib>

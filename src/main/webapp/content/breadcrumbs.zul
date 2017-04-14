@@ -1,0 +1,15 @@
+<zk>
+	<div id="breadcrumbs" sclass="breadcrumbs" apply="org.zkoss.bind.BindComposer" viewModel="@id('vm') @init('atc.gui.admin.zk.viewmodel.BreadcrumbVM')">
+		<div sclass="breadcrumb">
+			<span sclass="home-icon z-icon-home"/>
+			<a label="${labels.breadcrumbs.home}" onClick="@global-command('open', path='{parts:[{id:greeting}]}')"/>
+			<span children="@load(vm.pathsVector) @template('pathTemplate')" sclass="breadcrumb" style="margin-left:0px">
+				<template name="pathTemplate" var='pathItem'>
+					<a href="#"/>
+					<label style="width:0px;margin:0px;padding:0px"/>
+					<label sclass="anchor" value="${vm.getLabel(pathItem)}" onClick="@command('choose', pathPart=pathItem)"/>
+				</template>
+			</span>
+		</div>
+	</div>
+</zk>

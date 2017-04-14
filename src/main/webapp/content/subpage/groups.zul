@@ -1,0 +1,27 @@
+<zk>
+	<div apply="org.zkoss.bind.BindComposer" vflex="1" hflex="1"
+		viewModel="@id('vm') @init('atc.gui.admin.zk.viewmodel.GroupsVM')">
+		<div sclass="page-header"
+			style="padding-bottom: 8px; margin-bottom:0px;">
+			<label value="${labels.view.caption.group.list}"
+				sclass="page-header" style="font-size:30px; border-bottom:0px; " />
+		</div>
+
+		<toolbar>
+			<hlayout sclass="btn-group">
+				<button class="btn btn-primary btn-sm" label="Create"
+					onClick="@command('create')" />
+			</hlayout>
+		</toolbar>
+
+		<include src="uitemplates/list_entry_ex.zul"
+			entityList="@ref(vm.dataList)" entityClass="@ref(vm.entityClass)"
+			selectedEntity="@ref(vm.selected)" menuId="@ref('listRightMenu')"
+			editCommand="@ref('edit')" deleteCommand="@ref('delete')" />
+		<menupopup id="listRightMenu">
+			<menuitem label="Edit" onClick="@command('edit')" />
+			<!-- <menuitem label="Delete" onClick="@command('delete')"/> -->
+		</menupopup>
+
+	</div>
+</zk>

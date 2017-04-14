@@ -1,0 +1,12 @@
+<?taglib uri="http://www.zkoss.org/dsp/web/core" prefix="c"?>
+<zk>
+	<hlayout apply="org.zkoss.bind.BindComposer"
+		 	 viewModel="@id('vm') @init('atc.gui.admin.zk.viewmodel.export.ExportComponentVM', dataSourceFactory=dataSourceFactory, entityClass=entityClass)">
+		  	<!-- <selectbox id="types" sclass="form-control" model="@load(vm.exportTypes)" width="75px" selectedItem="@bind(vm.selectedType)" >
+                <template name="model">
+                    <label value="${each}" />
+                </template>
+            </selectbox>
+			<button label="Export" sclass="btn-primary" onClick="@command('doExport')" /> -->
+	 </hlayout>
+</zk>

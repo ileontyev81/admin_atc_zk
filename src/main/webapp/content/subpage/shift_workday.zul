@@ -1,0 +1,46 @@
+<?taglib uri="http://www.zkoss.org/dsp/web/core" prefix="c"?>
+<zk>
+   	<div vflex="1" hflex="1"
+		 apply="org.zkoss.bind.BindComposer"
+		 viewModel="@id('vm') @init('atc.gui.admin.zk.viewmodel.shift.ShiftWorkdayVM')"
+		 validationMessages="@id('vmsgs')">
+		 
+		<div sclass="page-header" style="padding-bottom: 8px; margin-bottom:0px;">
+			<label value="${c:l(c:cat3('view.caption.shift_workday.', vm.entity.isPersisted() ? 'edit' : 'add', ''))}" 
+				   sclass="page-header" style="font-size:30px; border-bottom:0px; "/>
+		</div>
+		
+		<panel>
+		<panelchildren>
+		<include src="uitemplates/edit_entry_ex.zul" vflex="1"
+			     entity="@ref(vm.entity)"
+			     submitCommand="@ref('submit')"/>
+ 		<button label="Submit" sclass="btn btn-primary" onClick="@command('submit')"/>
+ 		</panelchildren>
+ 		</panel>
+ 		
+ 		<zk if='${vm.entity.isPersisted()}'>
+ 		<panel>
+		<panelchildren>
+ 		<div sclass="page-header" style="margin-bottom:8px;">
+ 		<label value="Time Periods" sclass="page-header" style="font-size:20px; border-bottom:0px;"  hflex="1"/>
+ 		</div>
+ 		<div>
+ 		<button class="btn btn-primary btn-sm" vflex="1" label="Add Time Period" onClick="@command('goAddTime')"/>
+ 		</div>
+	 		<include src="uitemplates/list_entry_ex.zul"
+					 entityList="@ref(vm.timeList)"
+					 entityClass="@ref(vm.timeClass)"
+					 selectedEntity="@ref(vm.timeSelected)"
+					 menuId="@ref('timeListMenu')"
+					 editCommand="@ref('editTime')"
+					 deleteCommand="@ref('deleteTime')"/>
+			<menupopup id="timeListMenu">
+		        <menuitem label="Edit" onClick="@command('editTime')"/>
+		        <menuitem label="Delete" onClick="@command('deleteTime')"/>
+		    </menupopup>
+	    </panelchildren>
+ 		</panel>
+ 		</zk>
+	</div>
+</zk>

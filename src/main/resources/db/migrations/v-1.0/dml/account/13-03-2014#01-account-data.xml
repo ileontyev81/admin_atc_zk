@@ -1,0 +1,399 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<databaseChangeLog xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+				   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+				   xmlns:ext="http://www.liquibase.org/xml/ns/dbchangelog-ext"
+    			   xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.0.xsd
+    								   http://www.liquibase.org/xml/ns/dbchangelog-ext http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-ext.xsd">
+
+	<changeSet id="1" author="i.leontyev@gmail.com" context="test">
+		 <insert tableName="context">
+            <column name="id">1</column>
+            <column name="name">office</column>
+        </insert>
+        <rollback>
+        	DELETE FROM context WHERE id = 1; 
+        </rollback>
+    </changeSet>
+	<changeSet id="2" author="i.leontyev@gmail.com" context="test">
+		 <insert tableName="context">
+            <column name="id">2</column>
+            <column name="name">operator</column>
+        </insert>
+        <rollback>
+        	DELETE FROM context WHERE id = 2; 
+        </rollback>
+    </changeSet>
+	<changeSet id="3" author="i.leontyev@gmail.com" context="test">
+		 <insert tableName="context">
+            <column name="id">3</column>
+            <column name="name">forward</column>
+        </insert>
+        <rollback>
+        	DELETE FROM context WHERE id = 3; 
+        </rollback>
+    </changeSet>
+	<changeSet id="4" author="i.leontyev@gmail.com" context="test">
+		 <insert tableName="context">
+            <column name="id">4</column>
+            <column name="name">failover</column>
+        </insert>
+        <rollback>
+        	DELETE FROM context WHERE id = 4; 
+        </rollback>
+    </changeSet>
+	<changeSet id="5" author="i.leontyev@gmail.com" context="test">
+		 <insert tableName="context">
+            <column name="id">5</column>
+            <column name="name">originate</column>
+        </insert>
+        <rollback>
+        	DELETE FROM context WHERE id = 5; 
+        </rollback>
+    </changeSet>
+	<changeSet id="6" author="i.leontyev@gmail.com" context="test">
+		 <insert tableName="context">
+            <column name="id">6</column>
+            <column name="name">dialout</column>
+        </insert>
+        <rollback>
+        	DELETE FROM context WHERE id = 6; 
+        </rollback>
+    </changeSet>
+	<changeSet id="7" author="i.leontyev@gmail.com" context="test">
+		 <insert tableName="context">
+            <column name="id">7</column>
+            <column name="name">mobile</column>
+        </insert>
+        <rollback>
+        	DELETE FROM context WHERE id = 7; 
+        </rollback>
+    </changeSet>
+	<changeSet id="8" author="i.leontyev@gmail.com" context="test">
+		 <insert tableName="context">
+            <column name="id">8</column>
+            <column name="name">kdss</column>
+        </insert>
+        <rollback>
+        	DELETE FROM context WHERE id = 8; 
+        </rollback>
+    </changeSet>
+    
+  	<!-- ACCOUNT_NAT table -->
+	<changeSet id="9" author="i.leontyev@gmail.com" context="test">
+		 <insert tableName="account_nat">
+            <column name="id">1</column>
+            <column name="name">yes</column>
+        </insert>
+        <rollback>
+        	DELETE FROM account_nat WHERE id = 1; 
+        </rollback>
+    </changeSet>
+	<changeSet id="10" author="i.leontyev@gmail.com" context="test">
+		 <insert tableName="account_nat">
+            <column name="id">2</column>
+            <column name="name">no</column>
+        </insert>
+        <rollback>
+        	DELETE FROM account_nat WHERE id = 2; 
+        </rollback>
+    </changeSet>
+	<changeSet id="11" author="i.leontyev@gmail.com" context="test">
+		 <insert tableName="account_nat">
+            <column name="id">3</column>
+            <column name="name">comedia</column>
+        </insert>
+        <rollback>
+        	DELETE FROM account_nat WHERE id = 3; 
+        </rollback>
+    </changeSet>
+	<changeSet id="12" author="i.leontyev@gmail.com" context="test">
+		 <insert tableName="account_nat">
+            <column name="id">4</column>
+            <column name="name">force_rport</column>
+        </insert>
+        <rollback>
+        	DELETE FROM account_nat WHERE id = 4; 
+        </rollback>
+    </changeSet>
+    
+    <!-- ACCOUNT_QUALIFY table -->
+	<changeSet id="13" author="i.leontyev@gmail.com" context="test">
+		 <insert tableName="account_qualify">
+            <column name="id">1</column>
+            <column name="name">yes</column>
+        </insert>
+        <rollback>
+        	DELETE FROM account_qualify WHERE id = 1; 
+        </rollback>
+    </changeSet>
+	<changeSet id="14" author="i.leontyev@gmail.com" context="test">
+		 <insert tableName="account_qualify">
+            <column name="id">2</column>
+            <column name="name">no</column>
+        </insert>
+        <rollback>
+        	DELETE FROM account_qualify WHERE id = 2; 
+        </rollback>
+    </changeSet>
+    
+    <!-- ACCOUNT_TYPE table -->
+	<changeSet id="15" author="i.leontyev@gmail.com" context="test">
+		 <insert tableName="account_type">
+            <column name="id">1</column>
+            <column name="name">friend</column>
+        </insert>
+        <rollback>
+        	DELETE FROM account_type WHERE id = 1; 
+        </rollback>
+    </changeSet>
+	<changeSet id="16" author="i.leontyev@gmail.com" context="test">
+		 <insert tableName="account_type">
+            <column name="id">2</column>
+            <column name="name">peer</column>
+        </insert>
+        <rollback>
+        	DELETE FROM account_type WHERE id = 2; 
+        </rollback>
+    </changeSet>
+	<changeSet id="17" author="i.leontyev@gmail.com" context="test">
+		 <insert tableName="account_type">
+            <column name="id">3</column>
+            <column name="name">user</column>
+        </insert>
+        <rollback>
+        	DELETE FROM account_type WHERE id = 3; 
+        </rollback>
+    </changeSet>
+    
+    <!-- ACCOUNT_DTMF table -->
+	<changeSet id="18" author="i.leontyev@gmail.com" context="test">
+		 <insert tableName="account_dtmf">
+            <column name="id">1</column>
+            <column name="name">auto</column>
+        </insert>
+        <rollback>
+        	DELETE FROM account_dtmf WHERE id = 1; 
+        </rollback>
+    </changeSet>
+	<changeSet id="19" author="i.leontyev@gmail.com" context="test">
+		 <insert tableName="account_dtmf">
+            <column name="id">2</column>
+            <column name="name">rfc2833</column>
+        </insert>
+        <rollback>
+        	DELETE FROM account_dtmf WHERE id = 2; 
+        </rollback>
+    </changeSet>
+	<changeSet id="20" author="i.leontyev@gmail.com" context="test">
+		 <insert tableName="account_dtmf">
+            <column name="id">3</column>
+            <column name="name">info</column>
+        </insert>
+        <rollback>
+        	DELETE FROM account_dtmf WHERE id = 3; 
+        </rollback>
+    </changeSet>
+	<changeSet id="21" author="i.leontyev@gmail.com" context="test">
+		 <insert tableName="account_dtmf">
+            <column name="id">4</column>
+            <column name="name">inband</column>
+        </insert>
+        <rollback>
+        	DELETE FROM account_dtmf WHERE id = 4; 
+        </rollback>
+    </changeSet>
+    
+    <!-- SERVICE table -->
+	<changeSet id="22" author="i.leontyev@gmail.com" context="test">
+		<insert tableName="service">
+            <column name="id">1</column>
+            <column name="ident">787787</column>
+        </insert>
+        <rollback>
+         	DELETE FROM service WHERE id = 1; 
+        </rollback>
+    </changeSet>
+	<changeSet id="23" author="i.leontyev@gmail.com" context="test">
+		<insert tableName="service">
+            <column name="id">2</column>
+            <column name="ident">780078</column>
+        </insert>
+        <rollback>
+         	DELETE FROM service WHERE id = 2; 
+        </rollback>
+    </changeSet>
+	<changeSet id="24" author="i.leontyev@gmail.com" context="test">
+		<insert tableName="service">
+            <column name="id">3</column>
+            <column name="ident">777666</column>
+        </insert>
+        <rollback>
+         	DELETE FROM service WHERE id = 3;
+        </rollback>
+    </changeSet>
+	<changeSet id="25" author="i.leontyev@gmail.com" context="test">
+		<insert tableName="service">
+            <column name="id">4</column>
+            <column name="ident">404040</column>
+        </insert>
+        <rollback>
+         	DELETE FROM service WHERE id = 4; 
+        </rollback>
+    </changeSet>
+	<changeSet id="26" author="i.leontyev@gmail.com" context="test">
+		<insert tableName="service">
+            <column name="id">5</column>
+            <column name="ident">70707</column>
+        </insert>
+        <rollback>
+         	DELETE FROM service WHERE id = 5; 
+        </rollback>
+    </changeSet>
+    
+    <!-- ACCOUNT table -->
+	<changeSet id="27" author="i.leontyev@gmail.com" context="test">
+		 <insert tableName="account">
+            <column name="id">2</column>
+            <column name="name">4000</column>
+            <column name="amaflags"></column>
+            <column name="callgroup"></column>
+            <column name="callerid"></column>
+            <column name="directmedia">yes</column>
+            <column name="defaultip"></column>
+            <column name="fromuser"></column>
+            <column name="fromdomain"></column>
+            <column name="host">dynamic</column>
+            <column name="insecure"></column>
+            <column name="language"></column>
+            <column name="mailbox"></column>
+            <column name="md5secret"></column>
+            <column name="mask"></column>
+            <column name="pickupgroup"></column>
+            <column name="port">5060</column>
+            <column name="restrictcid"></column>
+            <column name="rtptimeout"></column>
+            <column name="rtpholdtimeout"></column>
+            <column name="secret">111</column>
+            <column name="username"></column>
+            <column name="musiconhold"></column>
+            <column name="regseconds">1357299022</column>
+            <column name="ipaddr">172.20.16.100</column>
+            <column name="regexten"></column>
+            <column name="cancallforward">yes</column>
+            <column name="lastms">356</column>
+            <column name="useragent">Cisco-CP7940G/8.0</column>
+            <column name="defaultuser">1000</column>
+            <column name="fullcontact">sip:1000@172.20.16.100:5060^3Btransport=udp</column>
+            <column name="regserver"></column>
+            <column name="service_id">3</column>
+            <column name="calllimit">10</column>
+            <column name="context_id">1</column>
+            <column name="created">2014-02-26 18:14:30+04</column>
+            <column name="user_id"></column>
+            <column name="nat_id">1</column>
+            <column name="type_id">1</column>
+            <column name="qualify_id">1</column>
+            <column name="dtmf_id">1</column>
+        </insert>
+        <rollback>
+        	DELETE FROM account WHERE id = 2; 
+        </rollback>
+    </changeSet>
+	<changeSet id="28" author="i.leontyev@gmail.com" context="test">
+		 <insert tableName="account">
+            <column name="id">4</column>
+            <column name="name">4001</column>
+            <column name="amaflags"></column>
+            <column name="callgroup"></column>
+            <column name="callerid"></column>
+            <column name="directmedia">yes</column>
+            <column name="defaultip"></column>
+            <column name="fromuser"></column>
+            <column name="fromdomain"></column>
+            <column name="host">dynamic</column>
+            <column name="insecure"></column>
+            <column name="language"></column>
+            <column name="mailbox"></column>
+            <column name="md5secret"></column>
+            <column name="mask"></column>
+            <column name="pickupgroup"></column>
+            <column name="port">5060</column>
+            <column name="restrictcid"></column>
+            <column name="rtptimeout"></column>
+            <column name="rtpholdtimeout"></column>
+            <column name="secret">123</column>
+            <column name="username"></column>
+            <column name="musiconhold"></column>
+            <column name="regseconds">1394726822</column>
+            <column name="ipaddr">172.20.64.52</column>
+            <column name="regexten"></column>
+            <column name="cancallforward">yes</column>
+            <column name="lastms">27</column>
+            <column name="useragent">Linphone/3.5.2 (eXosip2/3.6.0)</column>
+            <column name="defaultuser">1001</column>
+            <column name="fullcontact">sip:4001@172.20.64.52^3Bline=220fee45f6339fd</column>
+            <column name="regserver"></column>
+            <column name="service_id">3</column>
+            <column name="calllimit">10</column>
+            <column name="context_id">2</column>
+            <column name="created">2014-02-26 18:14:30+04</column>
+            <column name="user_id"></column>
+            <column name="nat_id">1</column>
+            <column name="type_id">1</column>
+            <column name="qualify_id">1</column>
+            <column name="dtmf_id">2</column>
+        </insert>
+        <rollback>
+        	DELETE FROM account WHERE id = 4;
+        </rollback>
+    </changeSet>
+	<changeSet id="29" author="i.leontyev@gmail.com" context="test">
+		 <insert tableName="account">
+            <column name="id">5</column>
+            <column name="name">4002</column>
+            <column name="amaflags"></column>
+            <column name="callgroup"></column>
+            <column name="callerid"></column>
+            <column name="directmedia">yes</column>
+            <column name="defaultip"></column>
+            <column name="fromuser"></column>
+            <column name="fromdomain"></column>
+            <column name="host">dynamic</column>
+            <column name="insecure"></column>
+            <column name="language"></column>
+            <column name="mailbox"></column>
+            <column name="md5secret"></column>
+            <column name="mask"></column>
+            <column name="pickupgroup"></column>
+            <column name="port">5060</column>
+            <column name="restrictcid"></column>
+            <column name="rtptimeout"></column>
+            <column name="rtpholdtimeout"></column>
+            <column name="secret">123</column>
+            <column name="username"></column>
+            <column name="musiconhold"></column>
+            <column name="regseconds">1392849950</column>
+            <column name="ipaddr">172.20.8.66</column>
+            <column name="regexten"></column>
+            <column name="cancallforward">yes</column>
+            <column name="lastms">9</column>
+            <column name="useragent">Linksys/SPA942-5.1.15(a)</column>
+            <column name="defaultuser">4002</column>
+            <column name="fullcontact">sip:4002@172.20.8.66:5060</column>
+            <column name="regserver"></column>
+            <column name="service_id">3</column>
+            <column name="calllimit">10</column>
+            <column name="context_id">2</column>
+            <column name="created">2014-02-26 18:14:30+04</column>
+            <column name="user_id"></column>
+            <column name="nat_id">1</column>
+            <column name="type_id">1</column>
+            <column name="qualify_id">1</column>
+            <column name="dtmf_id">3</column>
+        </insert>
+        <rollback>
+        	DELETE FROM account WHERE id = 5; 
+        </rollback>
+    </changeSet>
+    
+</databaseChangeLog>

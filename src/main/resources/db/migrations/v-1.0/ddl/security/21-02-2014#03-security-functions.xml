@@ -1,0 +1,424 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<databaseChangeLog xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+				   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+				   xmlns:ext="http://www.liquibase.org/xml/ns/dbchangelog-ext"
+    			   xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.1.xsd
+    								   http://www.liquibase.org/xml/ns/dbchangelog-ext http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-ext.xsd">
+
+	<changeSet id="1" author="i.leontyev@gmail.com" runOnChange="true" context="test">
+		<createProcedure>
+			DROP FUNCTION IF EXISTS voip_user_addresses_get(p_login text);
+		
+			CREATE OR REPLACE FUNCTION voip_user_addresses_get(p_login text)
+			RETURNS SETOF address_entry AS
+		    $_$
+		    DECLARE
+			    p_rec record;
+			    p account_entry;
+		    BEGIN
+			    RETURN QUERY 
+					SELECT adrt.id, adrt.city, adrt.street, adrt.house, adrt.flat --, adrt.owner_id
+					FROM "user" us 
+					LEFT JOIN address adrt ON adrt.owner_id = us.id
+				        WHERE us.login = $1
+				        ORDER BY adrt.id;
+		    END;
+			$_$
+			LANGUAGE plpgsql VOLATILE;
+    	</createProcedure>
+    	<sql>
+            ALTER FUNCTION voip_user_addresses_get(p_login text) OWNER TO ${jdbc.username};
+        </sql>
+        <rollback>
+        	DROP FUNCTION voip_user_addresses_get(text);
+        </rollback>
+    </changeSet>
+    
+    <changeSet id="2" author="i.leontyev@gmail.com" runOnChange="true" context="test">
+    	<comment>get role filled with all inner data</comment>
+		<createProcedure>
+			DROP FUNCTION IF EXISTS voip_user_role_get(int);
+		
+			CREATE OR REPLACE FUNCTION voip_user_role_get(p_role_id int)
+			RETURNS role_entry AS
+		    $_$
+		    #variable_conflict use_column
+		    DECLARE
+		    	p_rec record;
+				p role_entry;
+				p_permission permission_entry;
+			iterator int := 0;
+		    BEGIN
+				SELECT r.* FROM role r INTO p_rec WHERE r.id = p_role_id;
+				p.id = p_rec.id;
+				p.name = p_rec.name;
+				p.description = p_rec.description;
+				p.parent_role_id = p_rec.parent_role_id;
+				FOR p_permission IN 
+					WITH RECURSIVE tmp_role(id, parent_role_id) AS (
+						SELECT id, parent_role_id FROM role WHERE id = $1
+							UNION ALL
+							SELECT p.id, p.parent_role_id
+							FROM tmp_role tr, role p
+							WHERE p.id = tr.parent_role_id
+						)
+					SELECT p.id, p.name, p.description as permissions
+						FROM tmp_role tr, role_permission rp, permission p
+						WHERE tr.id = rp.role_id AND p.id = rp.permission_id
+						GROUP BY p.id, p.name, p.description
+
+				LOOP
+					p.permissions[iterator] := p_permission;
+					iterator:= iterator + 1;
+				END LOOP; 
+				--
+				RETURN p;	
+		    END;
+  		    $_$
+		    LANGUAGE plpgsql VOLATILE;
+    	</createProcedure>
+    	<sql>
+            ALTER FUNCTION voip_user_role_get(p_id int) OWNER TO ${jdbc.username};
+        </sql>
+        <rollback>
+        	DROP FUNCTION voip_user_role_get(p_id int);
+        </rollback>
+    </changeSet>
+    
+    <changeSet id="3" author="i.leontyev@gmail.com" runOnChange="true" context="test">
+		<createProcedure>
+			DROP FUNCTION IF EXISTS voip_user_roles_get(p_login text);
+		
+			CREATE OR REPLACE FUNCTION voip_user_roles_get(p_login text)
+			RETURNS SETOF role_entry AS
+			$BODY$
+			DECLARE
+				p_rec record;
+			BEGIN
+				FOR p_rec IN 
+					WITH RECURSIVE tmp_role(id, parent_role_id) AS (
+					    SELECT "id", parent_role_id FROM "role" WHERE id IN (
+											    select r.id
+											    from "user" u, role r, role_member rm
+											    where u.login = $1
+											    and u.id = rm.user_id
+											    and r.id = rm.role_id)
+						UNION ALL
+						SELECT rr.id, rr.parent_role_id 
+						FROM tmp_role tr, "role" rr
+						WHERE rr.id = tr.parent_role_id
+					)
+					SELECT * FROM tmp_role ORDER BY id ASC
+				LOOP
+					RETURN NEXT voip_user_role_get(p_rec.id);
+				END LOOP;
+				RETURN;
+			END;
+			$BODY$
+			LANGUAGE plpgsql VOLATILE;
+    	</createProcedure>
+    	<sql>
+            ALTER FUNCTION voip_user_roles_get(p_login text) OWNER TO ${jdbc.username};
+        </sql>
+        <rollback>
+        	DROP FUNCTION voip_user_roles_get(text);
+        </rollback>
+    </changeSet>
+    
+    <changeSet id="4" author="i.leontyev@gmail.com" runOnChange="true" context="test">
+		  <createProcedure>
+			DROP FUNCTION IF EXISTS voip_permission_get_list(text);
+		
+			CREATE OR REPLACE FUNCTION voip_permission_get_list(p_login text)
+			  RETURNS SETOF permission AS
+				$BODY$
+				DECLARE
+				   BEGIN
+				   RETURN QUERY 
+						WITH RECURSIVE tmp_role(id, parent_role_id) AS (
+						    SELECT id, parent_role_id FROM role WHERE id IN (
+															select r.id
+														    from "user" u, role r, role_member rm
+														    where u.login = $1
+														    and u.id = rm.user_id
+														    and r.id = rm.role_id)
+							UNION ALL
+							SELECT p.id, p.parent_role_id
+							FROM tmp_role tr, role p
+							WHERE p.id = tr.parent_role_id
+						)
+						SELECT p.id, p.name, p.description as permissions
+						FROM tmp_role tr, role_permission rp, permission p
+						WHERE tr.id = rp.role_id AND p.id = rp.permission_id
+						GROUP BY p.id, p.name, p.description;
+				   END;
+				$BODY$
+			    LANGUAGE plpgsql VOLATILE;
+    	   </createProcedure>
+    	   <sql>
+               ALTER FUNCTION voip_permission_get_list(text) OWNER TO ${jdbc.username};
+           </sql>
+           <rollback>
+        	   DROP FUNCTION voip_permission_get_list(text);
+    	   </rollback>        
+    </changeSet>
+    
+
+    
+    <changeSet id="5" author="i.leontyev@gmail.com" runOnChange="true" context="test">
+		<createProcedure>
+		    DROP FUNCTION IF EXISTS voip_user_get(int, boolean);
+		
+			CREATE OR REPLACE FUNCTION voip_user_get(p_user_id int DEFAULT NULL::int, p_light boolean DEFAULT FALSE)
+			RETURNS user_entry AS
+			$BODY$
+			DECLARE
+			   p_user_login text;
+			   BEGIN
+			   		IF p_user_id IS NOT NULL THEN
+			   	  		p_user_login:= (select u.login from "user" u WHERE u.id = $1 LIMIT 1);
+			   		END IF;
+			   		RETURN voip_user_get_byname(p_user_login, p_light);
+			   END;
+			$BODY$
+			LANGUAGE plpgsql VOLATILE;
+    	</createProcedure>
+    	<sql>
+            ALTER FUNCTION voip_user_get(int, boolean) OWNER TO ${jdbc.username};
+        </sql>
+        <rollback>
+        	DROP FUNCTION voip_user_get(int, boolean);
+    	</rollback>        
+    </changeSet>
+    
+    <changeSet id="6" author="i.leontyev@gmail.com" runOnChange="true" context="test">
+		<createProcedure>
+		   DROP FUNCTION IF EXISTS voip_user_get_byname(text, boolean);
+		
+			CREATE OR REPLACE FUNCTION voip_user_get_byname(p_login text, p_light boolean DEFAULT FALSE)
+			  RETURNS user_entry AS
+			   $BODY$
+	               DECLARE
+	                  p_res record;
+	                  p user_entry;
+	                  roles_id int[];
+	                  unselected_roles select_entry[];
+	                  BEGIN
+	                       IF p_login IS NOT NULL THEN
+	                          SELECT ust.id, ust.login, ust.password, ust.firstname, ust.lastname, ust.expired, ust.blocked, ust.credentials_expired, ust.created, 
+	                                     NULL,
+	                                     (CASE WHEN NOT $2 THEN (SELECT array_agg(ua.*) from voip_user_addresses_get($1) as ua) ELSE NULL END)
+	                         INTO p_res            
+	                         FROM "user" ust
+	                         WHERE ust.login = $1
+	                         LIMIT 1;
+	                         
+	                         p:= p_res;
+
+                             roles_id:= ARRAY(SELECT ur.id from voip_user_roles_get($1) as ur);
+                             unselected_roles:= ARRAY(SELECT (id, "name", FALSE)::select_entry FROM "role" WHERE id &lt;&gt; ALL(roles_id));
+                             p.roles:= array_cat(ARRAY(SELECT (id, "name", TRUE)::select_entry FROM "role" WHERE id = ANY(roles_id)), unselected_roles);
+
+	                         IF NOT FOUND THEN
+	                                RAISE EXCEPTION 'RESULT:20;';
+	                         END IF;
+	                   ELSE
+	                        p.id = 0;
+	                        p.expired := FALSE;
+	                        p.blocked := FALSE;
+	                        p.credentials_expired := FALSE;
+	                        p.roles = (CASE WHEN NOT $2 THEN ARRAY(SELECT (id, "name", FALSE)::select_entry from "role" as ur) ELSE NULL END);
+	                   END IF;
+	                   
+	                   RETURN p;
+	                  END;
+               $BODY$
+			  LANGUAGE plpgsql VOLATILE;
+    	</createProcedure>
+    	<sql>
+            ALTER FUNCTION voip_user_get_byname(text, boolean) OWNER TO ${jdbc.username};
+        </sql>
+        <rollback>
+        	DROP FUNCTION voip_user_get_byname(text, boolean);
+    	</rollback>        
+    </changeSet>
+    
+    <changeSet id="7" author="i.leontyev@gmail.com" runOnChange="true" context="test">
+		<createProcedure>
+			DROP FUNCTION IF EXISTS voip_user_get_list(result_filter);
+		
+			CREATE OR REPLACE FUNCTION voip_user_get_list(p_filter result_filter)
+			  RETURNS SETOF user_entry AS
+			$BODY$
+						DECLARE
+						    p_rec record;
+						BEGIN
+							--insert into log_table values('SELECT u.login FROM "user" u ' || ' WHERE ' || condition_chain(p_filter.regex) || ' ORDER BY u.id DESC LIMIT ' || p_filter.limit || ' OFFSET ' || p_filter.offset, '');
+							--insert into log_table values('SELECT u.login FROM "user" u ' || where_clause(p_filter.regex) || ' ORDER BY u.id DESC LIMIT', '');
+							FOR p_rec IN EXECUTE 'SELECT u.login FROM "user" u ' || where_clause(p_filter.regex) || ' ORDER BY u.id DESC'
+							LOOP
+								RETURN NEXT voip_user_get_byname(p_rec.login, FALSE);
+							END LOOP;
+						END;
+			$BODY$
+			LANGUAGE plpgsql VOLATILE;
+    	</createProcedure>
+    	<sql>
+            ALTER FUNCTION voip_user_get_list(result_filter) OWNER TO ${jdbc.username};
+        </sql>
+        <rollback>
+        	DROP FUNCTION voip_user_get_list(result_filter);
+    	</rollback>        
+    </changeSet>
+    
+    <changeSet id="8" author="i.leontyev@gmail.com" runOnChange="true" context="test">
+		<createProcedure>
+			DROP FUNCTION IF EXISTS voip_roles_update(user_entry);
+			
+			CREATE OR REPLACE FUNCTION voip_roles_update(p_user user_entry)
+			  RETURNS void AS
+			$BODY$
+						DECLARE
+							p_i int;
+							p_role_light select_entry;
+							BEGIN
+								raise notice 'inside voip_roles_update(p_user user_entry)';
+								DELETE FROM role_member WHERE user_id = p_user.id;-- clean 
+								IF (p_user.roles IS NOT NULL) THEN
+									FOR p_i IN 0..array_length(p_user.roles, 1)
+									LOOP
+										p_role_light:= p_user.roles[p_i];
+										IF p_role_light.selected THEN
+											--INSERT INTO log_table VALUES(p_role_light.id, (SELECT id FROM "user" u WHERE u.id = p_user.id));
+											INSERT INTO role_member(role_id, user_id) VALUES(p_role_light.id, p_user.id);
+										END IF;
+									END LOOP;
+								END IF;
+							END;
+				$BODY$
+			  LANGUAGE plpgsql VOLATILE
+			  COST 100;
+    	</createProcedure>
+    	<sql>
+            ALTER FUNCTION voip_roles_update(user_entry) OWNER TO ${jdbc.username};
+        </sql>
+        <rollback>
+        	DROP FUNCTION voip_roles_update(user_entry);
+        </rollback>
+    </changeSet>
+    
+    <!-- voip_user_addresses_get: adrt.id, adrt.city, adrt.street, adrt.house, adrt.flat -->
+ 	<changeSet id="9" author="i.leontyev@gmail.com" runOnChange="true" context="test">
+		<createProcedure>
+			DROP FUNCTION IF EXISTS voip_addresses_update(user_entry);
+			
+			CREATE OR REPLACE FUNCTION voip_addresses_update(p_user user_entry)
+			RETURNS void AS
+			$BODY$
+			DECLARE 
+				p_address address_entry;
+				p_i int;
+				BEGIN
+					IF (p_user.addresses IS NOT NULL) AND array_length(p_user.addresses, 1) > 0 THEN
+						FOR p_i in 0..array_upper(p_user.addresses, 1)
+						LOOP
+							p_address := p_user.addresses[p_i];
+							IF p_address.id > 0 THEN
+								UPDATE "address"
+							    	SET city = p_address.city, 
+							    		street = p_address.street, 
+							    		house = p_address.house, 
+							    		flat = p_address.flat 
+							    WHERE id  = p_address.id;
+							ELSE
+								INSERT INTO address(city, street, house, flat, owner_id)
+								VALUES(p_address.city, p_address.street, p_address.house, p_address.flat, p_user.id);
+							END IF;
+						END LOOP;
+					END IF;
+				END;
+			$BODY$
+			LANGUAGE plpgsql VOLATILE;
+    	</createProcedure>
+    	<sql>
+            ALTER FUNCTION voip_addresses_update(user_entry) OWNER TO ${jdbc.username};
+        </sql>
+        <rollback>
+        	DROP FUNCTION voip_addresses_update(user_entry);
+        </rollback>
+    </changeSet>
+    
+    
+   	<changeSet id="10" author="i.leontyev@gmail.com" runOnChange="true" context="test">
+		<createProcedure>
+			DROP FUNCTION IF EXISTS voip_user_save(user_entry, integer);
+			
+			CREATE OR REPLACE FUNCTION voip_user_save(p_entry user_entry, p_user_id integer)
+			  RETURNS user_entry AS
+			$BODY$
+						DECLARE
+							p_id integer;
+							p_password text;
+						BEGIN
+							p_id = p_entry.id;
+							
+							IF p_entry.id > 0 THEN
+								UPDATE "user"
+							    	SET login = p_entry.login, 
+							    		password = CASE WHEN exists(select * from "user" u where u.id = 1 and u.password = p_entry.password) THEN p_entry.password ELSE md5(p_entry.password) END,
+							    		firstname = p_entry.firstname, 
+							    		lastname = p_entry.lastname, 
+							    		expired = p_entry.expired,
+							    		blocked = p_entry.blocked,
+							    		credentials_expired = p_entry.credentials_expired
+							    WHERE id  = p_id;
+							ELSE
+								INSERT INTO "user"
+								(login, password, firstname, lastname, expired, blocked, credentials_expired)
+								VALUES (p_entry.login, MD5(p_entry.password), p_entry.firstname, p_entry.lastname, 
+							    		p_entry.expired, p_entry.blocked, p_entry.credentials_expired)
+								RETURNING id INTO p_id;
+							END IF;
+
+							--insert into log_table values('p_entry.id', p_entry.id::text);
+							p_entry.id:= p_id;
+							
+							PERFORM voip_roles_update(p_entry);
+							
+							PERFORM voip_addresses_update(p_entry); 
+											
+							RETURN voip_user_get(p_id);
+						END;
+						$BODY$
+			  LANGUAGE plpgsql VOLATILE;
+    	</createProcedure>
+    	<sql>
+            ALTER FUNCTION voip_user_save(user_entry, integer) OWNER TO ${jdbc.username};
+        </sql>
+        <rollback>
+        	DROP FUNCTION voip_user_save(user_entry, integer);
+        </rollback>
+    </changeSet>
+    
+ 	<changeSet id="11" author="i.leontyev@gmail.com" runOnChange="true" context="test">
+		<createProcedure>
+			DROP FUNCTION IF EXISTS voip_user_delete(integer);
+			
+			CREATE OR REPLACE FUNCTION voip_user_delete(p_id integer)
+			RETURNS void AS
+			$BODY$
+				BEGIN
+					DELETE FROM "user" a where a.id = p_id;
+				END;
+			$BODY$
+			LANGUAGE plpgsql VOLATILE;
+    	</createProcedure>
+    	<sql>
+            ALTER FUNCTION voip_user_delete(integer) OWNER TO ${jdbc.username};
+        </sql>
+        <rollback>
+        	DROP FUNCTION voip_user_delete(integer);
+        </rollback>
+    </changeSet>
+            
+</databaseChangeLog>

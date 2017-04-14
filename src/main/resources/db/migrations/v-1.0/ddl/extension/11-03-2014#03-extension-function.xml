@@ -1,0 +1,144 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<databaseChangeLog xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+				   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+				   xmlns:ext="http://www.liquibase.org/xml/ns/dbchangelog-ext"
+    			   xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.0.xsd
+    								   http://www.liquibase.org/xml/ns/dbchangelog-ext http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-ext.xsd">
+
+ 	<changeSet id="1" author="i.leontyev@gmail.com" runOnChange="true" context="test" dbms="postgresql">
+		<createProcedure>
+			DROP FUNCTION IF EXISTS voip_extension_get(integer, boolean);
+		
+			CREATE OR REPLACE FUNCTION voip_extension_get(p_id integer DEFAULT NULL::integer, p_light boolean DEFAULT FALSE)
+			  RETURNS extension_entry AS
+			$BODY$
+			DECLARE
+				p_rec record;
+				p extension_entry;
+			BEGIN
+				IF p_id IS NOT NULL THEN
+				    SELECT e.*, u.login AS user_login 
+				    INTO p_rec 
+				    FROM "extension" e 
+				        LEFT JOIN "user" u ON u.id = e.user_id
+				    WHERE e.id = p_id;
+				    IF NOT FOUND THEN
+				        RAISE EXCEPTION 'RESULT:20;';
+				    END IF;
+				
+				    p.id = p_rec.id;
+				    p.seq = p_rec.seq;
+				    p.description = p_rec.description;
+				    p.active = p_rec.active;
+				    p.created = p_rec.created;
+				    p.user_id = p_rec.user_id;
+				    p.user_login = p_rec.user_login;
+				ELSE
+					p.id = 0;
+					p.seq = 0;
+					p.active = true;
+				END IF;
+			RETURN p;
+			END;
+			$BODY$
+			LANGUAGE plpgsql VOLATILE;
+    	</createProcedure>
+    	<sql>
+            ALTER FUNCTION voip_extension_get(integer, boolean) OWNER TO ${jdbc.username};
+        </sql>
+        <rollback>
+        	DROP FUNCTION voip_extension_get(integer, boolean);
+        </rollback>
+    </changeSet>
+   
+ 	<changeSet id="2" author="i.leontyev@gmail.com" runOnChange="true" context="test" dbms="postgresql">
+		<createProcedure>
+			DROP FUNCTION IF EXISTS voip_extension_get_list(in p_filter result_filter);
+		
+			CREATE OR REPLACE FUNCTION voip_extension_get_list(in p_filter result_filter) 
+			RETURNS SETOF extension_entry AS
+			$BODY$
+			DECLARE
+				p_rec record;
+				result_cursor SCROLL CURSOR FOR 
+					SELECT e.id
+					FROM "extension" e
+					WHERE deleted = FALSE
+					ORDER BY e.seq, e.id DESC;
+			BEGIN
+				FOR p_rec IN result_cursor
+				LOOP
+					RETURN NEXT voip_extension_get(p_rec.id);
+				END LOOP;
+			END;
+			$BODY$
+		    LANGUAGE plpgsql VOLATILE;
+    	</createProcedure>
+    	<sql>
+            ALTER FUNCTION voip_extension_get_list(in p_filter result_filter) OWNER TO ${jdbc.username};
+        </sql>
+        <rollback>
+        	DROP FUNCTION voip_extension_get_list(in p_filter result_filter);
+        </rollback>
+    </changeSet>
+    
+   	<changeSet id="3" author="i.leontyev@gmail.com" runOnChange="true" context="test" dbms="postgresql">
+		<createProcedure>
+			DROP FUNCTION IF EXISTS voip_extension_save(extension_entry, integer);
+		
+			CREATE OR REPLACE FUNCTION voip_extension_save(p_entry extension_entry, p_user_id integer DEFAULT NULL::integer)
+			  RETURNS extension_entry AS
+			$BODY$
+						DECLARE
+							p_id integer;
+						BEGIN
+							p_id = p_entry.id;
+							
+							IF p_entry.id > 0 THEN
+								UPDATE "extension"
+							    	SET description = p_entry.description,
+							        seq = p_entry.seq,
+							        active = p_entry.active
+							    WHERE id  = p_entry.id;
+							ELSE
+								INSERT INTO "extension"
+								(seq, description, user_id)
+								VALUES (p_entry.seq, p_entry.description, p_user_id)
+								RETURNING id INTO p_id;
+							END IF;
+							
+							RETURN voip_extension_get(p_id);
+						END;
+						$BODY$
+			  LANGUAGE plpgsql VOLATILE;
+    	</createProcedure>
+    	<sql>
+            ALTER FUNCTION voip_extension_save(extension_entry, integer) OWNER TO ${jdbc.username};
+        </sql>
+        <rollback>
+        	DROP FUNCTION voip_extension_save(extension_entry, integer);
+        </rollback>
+    </changeSet>
+    
+ 	<changeSet id="4" author="i.leontyev@gmail.com" runOnChange="true" context="test" dbms="postgresql">
+		<createProcedure>
+			DROP FUNCTION IF EXISTS voip_extension_delete(integer);
+			
+			CREATE OR REPLACE FUNCTION voip_extension_delete(p_id integer)
+			  RETURNS void AS
+			$BODY$
+						BEGIN
+							DELETE FROM extension a where a.id = p_id;
+						END;
+						$BODY$
+			  LANGUAGE plpgsql VOLATILE;
+    	</createProcedure>
+    	<sql>
+            ALTER FUNCTION voip_extension_delete(integer) OWNER TO ${jdbc.username};
+        </sql>
+        <rollback>
+        	DROP FUNCTION voip_extension_delete(integer);
+        </rollback>
+    </changeSet>
+  
+</databaseChangeLog>

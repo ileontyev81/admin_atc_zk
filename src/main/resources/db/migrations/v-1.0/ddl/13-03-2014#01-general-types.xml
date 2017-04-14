@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<databaseChangeLog xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+				   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+				   xmlns:ext="http://www.liquibase.org/xml/ns/dbchangelog-ext"
+    			   xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.0.xsd
+    								   http://www.liquibase.org/xml/ns/dbchangelog-ext http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-ext.xsd">
+    								   
+	<changeSet id="1" author="i.leontyev@gmail.com" context="test" dbms="postgresql">
+    	<sql>
+			CREATE TYPE select_entry AS
+   			(
+   				id integer,
+    			label text,
+    			selected boolean
+   			);
+			ALTER TYPE select_entry OWNER TO ${jdbc.username};
+        </sql>
+        <rollback>
+           	DROP TYPE select_entry;
+        </rollback>
+    </changeSet>
+    
+	<changeSet id="7" author="i.leontyev@gmail.com" context="test" dbms="postgresql">
+    	<sql>
+            CREATE TYPE result_filter AS
+		    (
+		    	"offset" int,
+		    	"limit" int,
+		    	"count" boolean,
+			    regex hstore,
+			    ordering hstore
+		    );
+			ALTER TYPE result_filter OWNER TO ${jdbc.username};
+        </sql>
+        <rollback>
+           	DROP TYPE result_filter;
+        </rollback>
+    </changeSet>
+ 
+</databaseChangeLog>

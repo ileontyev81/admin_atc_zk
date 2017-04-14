@@ -1,0 +1,152 @@
+<?page zscriptLanguage="Groovy"?>
+<?taglib uri="/WEB-INF/tld/generalUtils.tld" prefix="gutils"?>
+<?taglib uri="/WEB-INF/tld/listEntityUtils.tld" prefix="lutils"?>
+<?taglib uri="http://www.zkoss.org/dsp/web/core" prefix="c"?>
+<?xel-method prefix="x" name="isNull"
+        class="java.util.Objects"
+        signature="boolean isNull(java.lang.Object)"?>
+<zk>
+    <style>
+        .z-listbox-header table {
+            table-layout: auto !important;
+            width: 100% !important;
+        }
+        .z-listbox-header > table > colgroup > col[id$='faker'] {
+            min-width: 1.56em;
+        }
+        .z-listbox-body table {
+            width: 100% !important;
+        }
+    </style>
+    <div>
+        <label value="${labels.view.items_per_page}" />
+		<label value="@bind(entityList.size())" />
+	</div>
+    <script>
+        <![CDATA[
+        // hack: table dynamic resizing
+        var headerIndex = 0;
+        var headersToBodies;
+        var listboxUUID = -1;
+
+        function resizeBody(event, element) {
+            if (listboxUUID != jq("$listbox").attr('id')) {
+                headersToBodies = null;
+                listboxUUID = jq("$listbox").attr('id');
+            }
+            if (!headersToBodies) {
+                headersToBodies = [];
+                var listboxHeaderCols = jq("$listbox").find(".z-listbox-header > table > colgroup > col[id$='faker']");
+                var listboxBodyCols = jq("$listbox").find(".z-listbox-body > table > colgroup > col[id$='faker']");
+                $.each(listboxHeaderCols, function(index, value) {
+                    var headerColId = $(value).attr('id');
+                    var bodyColId = $(listboxBodyCols[index]).attr('id');
+                    headersToBodies[headerColId] = bodyColId;
+                });
+            }
+            var width = event.width;
+            var bodyColId = headersToBodies[event.currentTarget.uuid + '-hdfaker'];
+            $('#' + bodyColId).width(width);
+        }
+        ]]>
+    </script>
+        <listbox id="listbox" sclass="task" xmlns:client="http://www.zkoss.org/2005/zk/client"
+             emptyMessage="${labels.message.nodata.result}"
+             model="@bind(entityList)" selectedItem="@bind(selectedEntity)"
+             span="true">
+
+        <listhead id="head" children="@load(gutils:getListFields(entityClass))">
+			<template name="children" var="field">
+				<zk switch="${gutils:getFormFieldType(field)}">
+					<zk case="AUDIO">
+						<listheader client:onAfterSize="resizeBody(event, this)" hflex="min"
+							label="@load(gutils:getFieldCaption(field.getName(), entityClass))"
+							width="220px"/>
+					</zk>
+					<zk>
+                        <listheader label="@load(gutils:getFieldCaption(field.getName(), entityClass))" client:onAfterSize="resizeBody(event, this)" hflex="min"
+                                    sortAscending="@load(lutils:isSortable(field) ? lutils:getSimpleComparator(field.getName(), true, entityClass) : '')"
+                                    sortDescending="@load(lutils:isSortable(field) ? lutils:getSimpleComparator(field.getName(), false, entityClass) : '')">
+                        </listheader>
+					</zk>
+				</zk>
+			</template>
+		</listhead>
+		<!-- name="model" default template used to draw content item -->
+		<template name="model" var="entityFromList">
+            <zscript>
+                <![CDATA[
+                    prevIdSpace = null;
+                ]]>
+            </zscript>
+			<listitem
+				children="@load(gutils:getListFields(entityClass))"
+				context="@load(menuId, position=at_pointer, delay=0)"
+				onDoubleClick="@command(editCommand)"
+				ctrlKeys="#del" onCtrlKey="@command(deleteCommand)">
+
+				<template name="children" var="field">
+					<!-- TODO: move field type choice into model(return here path to zul + data) -->
+					<zk switch="${gutils:getFormFieldType(field)}">
+						<zk case="AUDIO">
+							<zk choose="">
+								<zk when="${not x:isNull(entityFromList[field.getName()])}">
+                                    <listcell>
+                                        <idspace>
+                                            <button id="toggler" label="${labels.view.play_file}" sclass="btn btn-warning">
+                                                <attribute name="onClick">
+                                                    <![CDATA[
+                                                        if (prevIdSpace != null) {
+                                                            prevToggler = prevIdSpace.query("#toggler");
+                                                            prevToggler.setVisible(true);
+                                                            prevPlayer = prevIdSpace.query("#player");
+                                                            prevPlayer.setVisible(false);
+                                                            prevPlayer.stop();
+                                                            prevPlayer.setControls(false);
+                                                        }
+                                                        prevIdSpace = toggler.getSpaceOwner();
+                                                        toggler.setVisible(false);
+                                                        player.setControls(true);
+                                                        player.play();
+                                                        player.setVisible(true);
+                                                    ]]>
+                                                </attribute>
+                                            </button>
+                                            <audio id="player" visible="false"
+                                                   style="display: none;"
+                                                   preload="none"
+                                                   src="@load(entityFromList.getRecordSource())"
+                                                   controls=""/>
+                                        </idspace>
+                                    </listcell>
+								</zk>
+								<zk>
+                                    <listcell label="${labels.view.no_records}" />
+								</zk>
+							</zk>
+						</zk>
+                        <zk case="DATE">
+                            <listcell label="@load(entityFromList[field.getName()]) @converter('formatedDate',format='yyyy/MM/dd')"/>
+                        </zk>
+						<zk case="TIME">
+                            <listcell label="@load(entityFromList[field.getName()]) @converter('formatedDate',format='HH:mm')" />
+						</zk>
+                        <zk case="DATE_TIME">
+                            <listcell label="@load(entityFromList[field.getName()]) @converter('formatedDate',format='yyyy/MM/dd HH:mm')" />
+                        </zk>
+						<zk>
+							<zk choose="">
+								<zk when="${lutils:isMultirowField(field)}">
+									<listcell label="@load(entityFromList[field.getName()]) @converter('selectEntryArrayConverter')" />
+								</zk>
+								<zk>
+									<listcell label="@load(entityFromList[field.getName()])"/>
+								</zk>
+							</zk>
+						</zk>
+					</zk>
+				</template>
+			</listitem>
+		</template>
+	</listbox>
+</zk>

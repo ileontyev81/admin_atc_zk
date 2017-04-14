@@ -1,0 +1,61 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xmlns:context="http://www.springframework.org/schema/context"
+       xmlns:aop="http://www.springframework.org/schema/aop"
+       xmlns:zksp="http://www.zkoss.org/2008/zkspring/core"
+       xmlns:util="http://www.springframework.org/schema/util"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd
+						   http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context.xsd
+						   http://www.zkoss.org/2008/zkspring/core http://www.zkoss.org/2008/zkspring/core/zkspring-core.xsd
+						   http://www.springframework.org/schema/aop http://www.springframework.org/schema/aop/spring-aop.xsd
+						   http://www.springframework.org/schema/util http://www.springframework.org/schema/util/spring-util.xsd">
+
+    <!-- бины приложения/домен, но -->
+
+	<context:component-scan base-package="org.zkoss.essentials" />
+	<context:component-scan  base-package="org.zkoss.zkspringessentials.beans"/>
+	
+    <context:component-scan base-package="atc.gui.admin.domain,atc.gui.admin.infrastructure" />
+
+    <import resource="classpath:spring/zk.xml"/>
+	<import resource="classpath:spring/freemarker.xml"/>
+ 	<import resource="classpath:spring/security.xml"/>
+
+	 <!-- extend spring scopes with zkoss scopes -->
+	<zksp:zk-config/>
+
+	<context:property-placeholder location="classpath:jdbc.properties" />
+	
+    <context:annotation-config/>
+
+    <context:spring-configured />
+
+    <!-- UDT injection -->
+	<aop:config>
+	   <aop:aspect id="addUDTOnConnectionAspect" ref="addUDTOnConnectionAspectImpl">
+		   <aop:pointcut id="getConnectionPointcut" expression="execution(* com.impossibl.postgres.jdbc.PGDataSource.getConnection(..))"/>
+	       <aop:after-returning pointcut-ref="getConnectionPointcut" returning="returnedConnection" method="addUserTypes"/>
+	   </aop:aspect>
+	</aop:config>
+	<bean id="addUDTOnConnectionAspectImpl" class="atc.gui.admin.infrastructure.service.udt.AddUserTypesAspect"/>
+
+	<bean id="unpooledDataSource" class="${jdbc.datasource.class.name}">
+		<property name="host" value="${jdbc.host}" />
+		<property name="port" value="${jdbc.port}" />
+		<property name="database" value="${jdbc.database}" />
+		<property name="user" value="${jdbc.username}" />
+		<property name="password" value="${jdbc.password}" />
+	</bean>
+
+	<bean id="dataSource" class="com.mchange.v2.c3p0.DataSources" factory-method="pooledDataSource" >
+		<constructor-arg ref="unpooledDataSource"/>
+	</bean>
+
+	<bean id="jdbcTemplate" class="org.springframework.jdbc.core.JdbcTemplate">
+       	<property name="dataSource" ref="dataSource"/>
+	</bean>
+
+	<util:properties id="scriptsConfig" location="classpath:scripts.properties"/>
+
+</beans>

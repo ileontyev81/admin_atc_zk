@@ -1,0 +1,22 @@
+<?taglib uri="http://www.zkoss.org/dsp/web/core" prefix="c"?>
+<zk>
+   	<div vflex="1" hflex="1"
+		 apply="org.zkoss.bind.BindComposer"
+		 viewModel="@id('vm') @init('atc.gui.admin.zk.viewmodel.shift.ShiftWorkdayExcludeVM')"
+		 validationMessages="@id('vmsgs')">
+		 
+		<div sclass="page-header" style="padding-bottom: 8px; margin-bottom:0px;">
+			<label value="${c:l(c:cat3('view.caption.shift_workday_exclude.', vm.entity.isPersisted() ? 'edit' : 'add', ''))}" 
+				   sclass="page-header" style="font-size:30px; border-bottom:0px; "/>
+		</div>
+		
+		<panel>
+		<panelchildren>
+		<include src="uitemplates/edit_entry_ex.zul" vflex="1"
+			     entity="@ref(vm.entity)"
+			     submitCommand="@ref('submit')"/>
+ 		<button label="Submit" sclass="btn btn-primary" onClick="@command('submit')"/>
+ 		</panelchildren>
+ 		</panel>
+	</div>
+</zk>

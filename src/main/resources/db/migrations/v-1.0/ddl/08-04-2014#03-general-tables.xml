@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<databaseChangeLog xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+				   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+				   xmlns:ext="http://www.liquibase.org/xml/ns/dbchangelog-ext"
+    			   xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.0.xsd
+    								   http://www.liquibase.org/xml/ns/dbchangelog-ext http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-ext.xsd">
+    							
+	<changeSet id="1" author="i.leontyev@gmail.com" context="test">
+		<comment>Logging</comment>
+        <createTable tableName="log_table">
+            <column name="level" type="text">
+            	<constraints nullable="false"/>
+            </column>
+            <column name="value" type="text">
+            	<constraints nullable="false"/>
+            </column>
+        </createTable>
+ 		<sql>
+            ALTER TABLE log_table OWNER TO ${jdbc.username};
+        </sql>
+        <rollback>
+        	<dropTable tableName="log_table"/>
+        </rollback>
+    </changeSet>
+
+ 
+</databaseChangeLog>

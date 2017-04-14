@@ -1,0 +1,35 @@
+<?page contentType="text/html;charset=UTF-8"?>
+<zk>
+	<div apply="org.zkoss.bind.BindComposer"
+		 viewModel="@id('vm') @init('atc.gui.admin.zk.viewmodel.AccountSearchVM')"
+		 validationMessages="@id('vmsgs')">
+		<div sclass="page-header"
+			style="padding-bottom: 8px; margin-bottom:0px;">
+			<label value="Account Search" sclass="page-header"
+				   style="font-size:30px; border-bottom:0px; " />
+		</div>
+
+		<panel>
+			<panelchildren>
+				<include src="uitemplates/edit_entry_ex.zul"
+					 entity="@ref(vm.searchEntry)"
+					 submitCommand="@ref('search')"/>
+
+				<button label="Search" sclass="btn btn-primary" onClick="@command('search')"/>
+			</panelchildren>
+	 	</panel>
+	 	
+		<include src="uitemplates/list_entry_ex.zul"
+				 entityList="@ref(vm.dataList)"
+				 entityClass="@ref(vm.entityClass)"
+				 selectedEntity="@ref(vm.selected)"
+				 menuId="@ref('listRightMenu')"
+				 editCommand="@ref('edit')"
+				 deleteCommand="@ref('delete')"/>
+		<menupopup id="listRightMenu">
+	        <menuitem label="Edit" onClick="@command('edit')"/>
+	        <menuitem label="Delete" onClick="@command('delete')"/>
+	    </menupopup>
+
+	</div>
+</zk>

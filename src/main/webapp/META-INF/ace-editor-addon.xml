@@ -1,0 +1,138 @@
+<language-addon>
+	<addon-name>acebox</addon-name>
+	<version>
+		<version-class>com.alibaba.zk.zul.acebox.Version</version-class>
+		<version-uid>0.0.1-SNAPSHOT</version-uid>
+		<zk-version>6.0.1</zk-version><!-- or later -->
+	</version>
+
+	<language-name>xul/html</language-name>
+	
+	<!-- 
+	This property is used for custome acebox.wpd path.
+	path like /zkau/web/_zv<version>/js/acebox.wpd
+	example: /zkau/web/_zv0.0.1/js/acebox.wpd 
+	-->
+	<javascript-module name="acebox" version="0.0.1"/>
+	
+	<component>
+		<component-name>acebox</component-name> <!-- required -->
+		<component-class>com.alibaba.zk.zul.acebox.Acebox</component-class> <!-- required -->
+		<widget-class>acebox.Acebox</widget-class> <!-- required -->
+		
+		<mold>
+			<mold-name>default</mold-name>
+			<mold-uri>mold/acebox.js</mold-uri>
+
+			<!-- == Tip in advance == You don't have to specify a css.dsp if you need 
+				not , but usually you need it. You could assign a .css file ,too. The css.dsp 
+				is almost as same as CSS file , but have more powerful enhancement. (like 
+				EL support.) ==== -->
+			<css-uri>css/acebox.css.dsp</css-uri>
+		</mold>
+		<annotation>
+			<annotation-name>ZKBIND</annotation-name>
+			<property-name>value</property-name>
+			<attribute>
+				<attribute-name>ACCESS</attribute-name>
+				<attribute-value>both</attribute-value>
+			</attribute>
+			<attribute>
+				<attribute-name>SAVE_EVENT</attribute-name>
+				<attribute-value>onChange</attribute-value>
+			</attribute>
+			<attribute>
+				<attribute-name>LOAD_REPLACEMENT</attribute-name>
+				<attribute-value>rawValue</attribute-value>
+			</attribute>
+			<attribute>
+				<attribute-name>LOAD_TYPE</attribute-name>
+				<attribute-value>java.lang.String</attribute-value>
+			</attribute>
+		</annotation>
+		<annotation>
+			<annotation-name>ZKBIND</annotation-name>
+			<property-name>selText</property-name>
+			<attribute>
+				<attribute-name>ACCESS</attribute-name>
+				<attribute-value>both</attribute-value>
+			</attribute>
+			<attribute>
+				<attribute-name>SAVE_EVENT</attribute-name>
+				<attribute-value>onSelect</attribute-value>
+			</attribute>
+			<attribute>
+				<attribute-name>LOAD_TYPE</attribute-name>
+				<attribute-value>java.lang.String</attribute-value>
+			</attribute>
+		</annotation>
+		<annotation>
+			<annotation-name>ZKBIND</annotation-name>
+			<property-name>selRange</property-name>
+			<attribute>
+				<attribute-name>ACCESS</attribute-name>
+				<attribute-value>both</attribute-value>
+			</attribute>
+			<attribute>
+				<attribute-name>SAVE_EVENT</attribute-name>
+				<attribute-value>onSelect</attribute-value>
+			</attribute>
+			<attribute>
+				<attribute-name>LOAD_TYPE</attribute-name>
+				<attribute-value>java.lang.String</attribute-value>
+			</attribute>
+		</annotation>
+		<annotation>
+			<annotation-name>ZKBIND</annotation-name>
+			<property-name>readonly</property-name>
+			<attribute>
+				<attribute-name>ACCESS</attribute-name>
+				<attribute-value>both</attribute-value>
+			</attribute>
+			<attribute>
+				<attribute-name>LOAD_TYPE</attribute-name>
+				<attribute-value>java.lang.String</attribute-value>
+			</attribute>
+		</annotation>
+		<annotation>
+			<annotation-name>ZKBIND</annotation-name>
+			<property-name>gutter</property-name>
+			<attribute>
+				<attribute-name>ACCESS</attribute-name>
+				<attribute-value>both</attribute-value>
+			</attribute>
+			<attribute>
+				<attribute-name>LOAD_TYPE</attribute-name>
+				<attribute-value>java.lang.String</attribute-value>
+			</attribute>
+		</annotation>
+		<annotation>
+			<annotation-name>ZKBIND</annotation-name>
+			<property-name>wrap</property-name>
+			<attribute>
+				<attribute-name>ACCESS</attribute-name>
+				<attribute-value>both</attribute-value>
+			</attribute>
+			<attribute>
+				<attribute-name>LOAD_TYPE</attribute-name>
+				<attribute-value>java.lang.String</attribute-value>
+			</attribute>
+		</annotation>
+		<annotation>
+			<annotation-name>ZKBIND</annotation-name>
+			<property-name>position</property-name>
+			<attribute>
+				<attribute-name>SAVE_EVENT</attribute-name>
+				<attribute-value>onMove</attribute-value>
+			</attribute>
+			<attribute>
+				<attribute-name>ACCESS</attribute-name>
+				<attribute-value>both</attribute-value>
+			</attribute>
+			<attribute>
+				<attribute-name>LOAD_TYPE</attribute-name>
+				<attribute-value>java.lang.Integer</attribute-value>
+			</attribute>
+		</annotation>
+	</component>
+</language-addon>

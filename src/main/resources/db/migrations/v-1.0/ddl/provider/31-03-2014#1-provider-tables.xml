@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<databaseChangeLog xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+				   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+				   xmlns:ext="http://www.liquibase.org/xml/ns/dbchangelog-ext"
+    			   xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.0.xsd
+    								   http://www.liquibase.org/xml/ns/dbchangelog-ext http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-ext.xsd">
+
+ 	<changeSet id="1" author="i.leontyev@gmail.com" context="test">
+        <createTable tableName="provider">
+            <column name="id" autoIncrement="true" type="int">
+                <constraints primaryKey="true" nullable="false" primaryKeyName="pk_provider" />
+            </column>
+            <column name="tech" type="text">
+            	<constraints nullable="false" />
+            </column>
+            <column name="description" type="text" defaultValue="">
+            	<constraints nullable="false" />
+            </column>
+            <column name="callerid" type="text" defaultValue="">
+            	<constraints nullable="false" />
+            </column>
+            <column name="callerid_set" type="boolean" defaultValueBoolean="true">
+                <constraints nullable="false" />
+            </column>
+            <column name="created" type="java.sql.Types.TIMESTAMP" defaultValueComputed="${now}">
+            	<constraints nullable="false"/>
+            </column>
+            <column name="user_id" type="int"/>
+        </createTable>
+            <sql>
+            	ALTER TABLE provider OWNER TO ${jdbc.username};
+        	</sql>
+        <rollback>
+        	<dropTable tableName="provider"/>
+        </rollback>
+    </changeSet>
+
+    <changeSet id="2" author="i.leontyev@gmail.com" context="test">
+		<addForeignKeyConstraint 
+			baseColumnNames="user_id"
+            baseTableName="provider"
+            constraintName="provider_fk"
+            deferrable="true"
+            initiallyDeferred="true"
+            onDelete="RESTRICT"
+            onUpdate="NO ACTION"
+            referencedColumnNames="id"
+            referencedTableName="user"/>
+        <rollback>
+        	<dropForeignKeyConstraint baseTableName="provider" constraintName="provider_fk"/>
+        </rollback>
+    </changeSet>
+
+</databaseChangeLog>

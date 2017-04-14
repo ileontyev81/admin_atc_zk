@@ -1,0 +1,171 @@
+<?taglib uri="/WEB-INF/tld/generalUtils.tld" prefix="gutils"?>
+<?taglib uri="/WEB-INF/tld/editEntityUtils.tld" prefix="eutils"?>
+
+<zk>
+	<vlayout sclass="form-inline" hflex="1">
+	 	<grid model="@load(gutils:getEditFields(entity))" vflex="1" style="padding-right: 3px;">
+           <columns>
+               <column label="" hflex="min" align="right"/>
+               <column label="" hflex="min"/>
+               <column label="" hflex="1"/>
+           </columns>
+           <rows>
+ 			<template name="model" var="entityField">
+	               <row form="@id('fx') @load(entity) @save(entity, before=submitCommand) @validator(eutils:JSR303Validator(entity.getClass()))"
+	               		fieldName="@ref(entityField.getName())">
+	                   <hbox>
+	               	 		<separator />
+	                   		<label value="@load(gutils:getFieldCaption(fieldName, entity.getClass()))" style="white-space: nowrap;"/>
+	                  	</hbox>
+	                   <div sclass="@load(not empty vmsgs[fieldName]?'has-error has-feedback':'')">
+	                   <idspace>
+		                   <hlayout sclass="form-group" hflex="1">
+			                   <zk switch="${gutils:getFormFieldType(entityField)}">
+			                     	<zk case="SELECT">
+										<include src="@init('uitemplates/select_entry_listbox.zul')" rows="1" width="300px"
+					 	 						 data="@ref(fx[fieldName])" mold_value="select" tab_index="@load(entityFieldStatus.index + 1)"
+					 	 						 disabled="@load(eutils:isDisabled(entityField, entity))"/>
+								    </zk>
+			                     	<zk case="SELECT_NO_ITEM">
+										<include src="@init('uitemplates/select_entry_listbox.zul')" rows="1" width="300px"
+												 noSelection="true"
+					 	 						 data="@ref(fx[fieldName])" mold_value="select" tab_index="@load(entityFieldStatus.index + 1)"
+					 	 						 disabled="@load(eutils:isDisabled(entityField, entity))"/>
+								    </zk>
+								    <zk case="LIST">
+										<include src="@init('uitemplates/select_entry_listbox.zul')" rows="10" width="300px"
+												 data="@ref(fx[fieldName])" mold_value="select" tab_index="@load(entityFieldStatus.index + 1)"
+												 multiple="true"
+					 	 						 disabled="@load(eutils:isDisabled(entityField, entity))"/>
+								    </zk>
+								    <zk case="CHECKBOX">
+								    	<div>
+									    	<checkbox name="@load(fieldName)" checked="@bind(fx[fieldName])" width="300px"
+									    			  tabindex="@load(entityFieldStatus.index + 1)"
+						 	 						  disabled="@load(eutils:isDisabled(entityField, entity))"/>
+					    			  	</div>
+								    </zk>
+								    <zk case="DATE">
+								    	<div hflex="1">
+									        <datebox name="@load(fieldName)" value="@bind(fx[fieldName])" width="300px"
+									        		 tabindex="@load(entityFieldStatus.index + 1)" mold="rounded"
+									        		 format="yyyy/MM/dd"
+									        		 sclass="input-group"
+						 	 						 disabled="@load(eutils:isDisabled(entityField, entity))"/>
+						        		</div>
+								    </zk>
+								    <zk case="TIME">
+								    	<div hflex="1">
+								    		<timebox name="@load(fieldName)" value="@bind(fx[fieldName])" width="300px"
+														 mold="rounded" 
+														 sclass="input-group"
+														 format="HH:mm"
+														 disabled="@load(eutils:isDisabled(entityField, entity))"/>
+						        		</div>
+								    </zk>
+								    <zk case="DATE_TIME">
+								    	<div hflex="1">
+									        <datebox name="@load(fieldName)" value="@bind(fx[fieldName])" width="300px"
+									        		 tabindex="@load(entityFieldStatus.index + 1)" mold="rounded"
+									        		 format="yyyy/MM/dd HH:mm"
+									        		 sclass="input-group"
+						 	 						 disabled="@load(eutils:isDisabled(entityField, entity))"/>
+						        		</div>
+								    </zk>
+								    <zk case="DATE_RANGE">
+								    	<div>
+								    		<hbox vflex="1" align="center">
+												<label value="From:" hflex="1"/>
+												<datebox name="@load(fieldName)" cols="7" 
+														 format="yyyy/MM/dd"
+														 onFocus="self.select();self.setOpen(true)" 
+														 constraint="no future"
+														 value="@bind(fx[fieldName][0])"
+														 sclass="input-group"
+														 disabled="@load(eutils:isDisabled(entityField, entity))"/>
+								    		</hbox>
+								    		<separator/>
+								    		<hbox vflex="1" align="center">
+												<label value="To:" hflex="1"/>
+												<datebox name="@load(fieldName)" cols="7" 
+														 onFocus="self.select();self.setOpen(true)"
+														 value="@bind(fx[fieldName][1])"
+														 sclass="input-group"
+														 format="yyyy/MM/dd"
+														 disabled="@load(eutils:isDisabled(entityField, entity))" mold="rounded"/>
+								    		</hbox>
+										</div>
+								    </zk>
+								    <zk case="TIME_RANGE">
+								    	<div>
+								    		<hbox vflex="1" align="center">
+												<label value="From:" hflex="1"/>
+												<timebox name="@load(fieldName)" constraint="no future" 
+														 value="@bind(fx[fieldName][0])"
+														 mold="rounded" onFocus="self.select()"
+														 sclass="input-group"
+														 format="HH:mm"
+														 disabled="@load(eutils:isDisabled(entityField, entity))"/>
+											</hbox>
+											<separator/>
+											<hbox vflex="1" align="center">
+												<label value="To:" hflex="1"/>
+												<timebox name="@load(fieldName)" 
+														 value="@bind(fx[fieldName][1])"
+														 format="HH:mm" 
+														 mold="rounded" onFocus="self.select()"
+														 sclass="input-group"
+														 disabled="@load(eutils:isDisabled(entityField, entity))"/>
+											</hbox>
+										</div>
+								    </zk>
+								    <zk case="PASSWORD">
+										<textbox name="@load(fieldName)" value="@bind(fx[fieldName])" width="300px"
+							                 	 sclass="form-control" tabindex="@load(entityFieldStatus.index + 1)"
+							                 	 type="password"
+					 	 						 disabled="@load(eutils:isDisabled(entityField, entity))"/>
+								    </zk>
+								    <zk case="TEXTAREA">
+								    	<div>
+											<textbox name="@load(fieldName)" value="@bind(fx[fieldName])" width="300px"
+								                 	 sclass="form-control" tabindex="@load(entityFieldStatus.index + 1)"
+						 	 						 disabled="@load(eutils:isDisabled(entityField, entity))"
+						 	 						 rows="2"/>
+						        		</div>
+								    </zk>
+								    <zk case="CODEBOX">
+								    	<div>
+								    		<acebox name="@load(fieldName)" value="@bind(fx[fieldName])" width="1100px" height="600px"
+								    				mode="javascript"
+								    				disabled="@load(eutils:isDisabled(entityField, entity))"
+								    				sclass="form-control"
+								    				tabindex="@load(entityFieldStatus.index + 1)"/>
+						        		</div>
+								    </zk>
+								    <zk>
+								    	<zk choose="">
+									    	<zk when="${eutils:isDigitField(entityField)}">
+												<textbox width="300px" name="@load(fieldName)" value="@bind(fx[fieldName]) @validator(eutils:DigitTextboxValidator(9))"
+										                 sclass="form-control" tabindex="@load(entityFieldStatus.index + 1)"
+								 	 					 disabled="@load(eutils:isDisabled(entityField, entity))"/>
+									    	</zk>
+									    	<zk>
+												<textbox width="300px" name="@load(fieldName)" value="@bind(fx[fieldName])" 
+										                 sclass="form-control" tabindex="@load(entityFieldStatus.index + 1)"
+								 	 					 disabled="@load(eutils:isDisabled(entityField, entity))"/>
+									    	</zk>
+								    	</zk>
+								    </zk>
+								</zk>
+		                   	</hlayout>
+		               </idspace>
+	                   </div>
+	                   <div sclass="has-error has-feedback">
+	                		<label value="@load(vmsgs[fieldName])" sclass="control-label"/>
+	                   </div>
+	               </row>
+	             </template>
+	    	 </rows>
+		</grid>
+  	</vlayout>
+</zk>

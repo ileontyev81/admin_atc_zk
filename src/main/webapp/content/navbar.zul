@@ -1,0 +1,21 @@
+<!--<?taglib uri="http://www.zkoss.org/zkspring/security" prefix="sec"?>-->
+<div sclass="navbar" apply="org.zkoss.bind.BindComposer"
+					 viewModel="@id('vm') @init('atc.gui.admin.zk.viewmodel.NavbarVM')">
+
+	<!-- brand logo -->
+	<span>
+	    <a label="${labels.app.title}" sclass="pull-left navbar-brand" iconSclass="z-icon-leaf"/>
+	</span>
+
+	<!-- navbar -->
+	<hlayout sclass="nav-user pull-right" spacing="0">
+		<!-- User menu -->
+		<menubar sclass="user-menu light-blue">
+			<menu sclass="decoded" label="@load(vm.label)" tooltiptext="@load(vm.toolTipText)" image="/images/admin.png"> <!--image="http://lorempixel.com/36/36/"-->
+				<menupopup>
+  					<menuitem label="${labels.navbar.menu.logout}" iconSclass="z-icon-off" onClick='Executions.sendRedirect("/logout")'/>
+				</menupopup>
+			</menu>
+		</menubar>
+	</hlayout>
+</div>

@@ -1,0 +1,246 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<databaseChangeLog xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+				   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+				   xmlns:ext="http://www.liquibase.org/xml/ns/dbchangelog-ext"
+    			   xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.0.xsd
+    								   http://www.liquibase.org/xml/ns/dbchangelog-ext http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-ext.xsd">
+    							
+    <changeSet id="1" author="i.leontyev@gmail.com" runOnChange="true" context="test" dbms="postgresql">
+		<createProcedure>
+			DROP FUNCTION IF EXISTS voip_account_save(account_entry, integer);
+		
+			CREATE OR REPLACE FUNCTION voip_account_save(p_entry account_entry, p_user_id integer)
+			  RETURNS account_entry AS
+			$BODY$
+			DECLARE
+				p_id integer;
+			BEGIN
+				IF p_entry.id > 0 THEN
+					p_id = p_entry.id;
+					UPDATE account
+				    	SET 
+				        "name" = p_entry.name,
+				        host = p_entry.host,
+				        secret = p_entry.secret,
+				        type_id = h_select_value(p_entry.type),
+				        context_id = h_select_value(p_entry.context),
+				        callerid = p_entry.callerid,
+				        nat_id = h_select_value(p_entry.nat),
+				        callgroup = p_entry.callgroup,
+				        pickupgroup = p_entry.pickupgroup,
+				        qualify_id = h_select_value(p_entry.qualify),
+				        service_id = h_select_value(p_entry.service)
+				        
+				    WHERE id = p_id;
+				ELSE
+					INSERT INTO account 
+					    ("name", 
+					     host, 
+					     secret, 
+					     type_id, 
+					     context_id, 
+					     callerid, 
+					     nat_id, 
+					     callgroup, 
+					     pickupgroup, 
+						 qualify_id,
+					     service_id, 
+					     dtmf_id,
+					     user_id)
+				    VALUES
+				    	(p_entry.name, 
+						 p_entry.host, 
+					     p_entry.secret, 
+					     h_select_value(p_entry.type),  
+					     h_select_value(p_entry.context), 
+					     p_entry.callerid, 
+					     h_select_value(p_entry.nat), 
+						 p_entry.callgroup, 
+					     p_entry.pickupgroup, --p_disallow, p_allow, 
+					 	 h_select_value(p_entry.qualify), 
+					     h_select_value(p_entry.service),
+					     h_select_value(p_entry.dtmf),
+					     p_user_id)
+					RETURNING id INTO p_id;
+				END IF;
+				
+				DELETE FROM account_codec WHERE account_id = p_id;
+				
+				IF array_ndims(p_entry.codec_allow) IS NOT NULL THEN
+					FOR i IN array_lower(p_entry.codec_allow, 1)..array_upper(p_entry.codec_allow, 1) LOOP
+					    IF p_entry.codec_allow[i].selected THEN
+				    		INSERT INTO account_codec (account_id, codec_id, allow)
+				        		VALUES (p_id, p_entry.codec_allow[i].id, TRUE);
+				        END IF;
+				    END LOOP;
+				END IF;
+				
+				IF array_ndims(p_entry.codec_disallow) IS NOT NULL THEN
+					FOR i IN array_lower(p_entry.codec_disallow, 1)..array_upper(p_entry.codec_disallow,1) LOOP
+				    	IF p_entry.codec_disallow[i].selected THEN
+				            INSERT INTO account_codec (account_id, codec_id, allow)
+				                VALUES (p_id, p_entry.codec_disallow[i].id, FALSE);
+				        END IF;
+				    END LOOP;
+				END IF;
+			    
+				RETURN voip_account_get(p_id, TRUE);
+			END;
+			$BODY$
+			  LANGUAGE plpgsql VOLATILE;
+    	</createProcedure>
+    	<sql>
+            ALTER FUNCTION voip_account_save(account_entry, integer) OWNER TO ${jdbc.username};
+        </sql>
+        <rollback>
+        	DROP FUNCTION voip_account_save(account_entry, integer);
+        </rollback>
+    </changeSet>
+    
+ 	<changeSet id="2" author="i.leontyev@gmail.com" runOnChange="true" context="test" dbms="postgresql">
+		<createProcedure>
+			DROP FUNCTION IF EXISTS voip_account_get(integer, boolean);
+			
+				CREATE OR REPLACE FUNCTION voip_account_get(p_id integer DEFAULT NULL::integer, p_light boolean DEFAULT FALSE)
+			  RETURNS account_entry AS
+			$BODY$
+			DECLARE
+				p account_entry;
+			    p_rec record;
+			BEGIN
+				IF p_id IS NOT NULL THEN
+				    SELECT 
+				        a.*, 
+				        s.ident, 
+				        u.login AS user_login, 
+				        c.name AS "context",
+				        an.name AS nat
+				        
+				        INTO p_rec
+				        FROM account a
+				            INNER JOIN service s ON s.id = a.service_id
+				            INNER JOIN context c ON a.context_id = c.id
+				            INNER JOIN account_nat an ON an.id = a.nat_id
+				
+				            LEFT JOIN "user" u ON u.id = a.user_id
+				        WHERE a.id = p_id;
+				    IF NOT FOUND THEN
+				        RAISE EXCEPTION 'RESULT:20;';
+				    END IF;
+				
+				    p.id = p_rec.id;
+				    p.name = p_rec.name;
+				    p.callerid = p_rec.callerid;
+				    p.callgroup = p_rec.callgroup;
+				    p.pickupgroup = p_rec.pickupgroup;
+				    p.context = ARRAY(SELECT (id, "name", CASE WHEN id = p_rec.context_id THEN TRUE ELSE FALSE END)::select_entry FROM context);--p_rec.context_id;
+				    p.host = p_rec.host;
+				    p.nat = ARRAY(SELECT (v.id, v.name, CASE WHEN p_rec.nat_id = v.id THEN TRUE ELSE FALSE END)::select_entry FROM account_nat v);
+				    p.qualify = ARRAY(SELECT (v.id, v.name, CASE WHEN p_rec.qualify_id = v.id THEN TRUE ELSE FALSE END)::select_entry FROM account_qualify v);
+				    p.secret = p_rec.secret;
+				    p.type = ARRAY(SELECT (v.id, v.name, CASE WHEN p_rec.type_id = v.id THEN TRUE ELSE FALSE END)::select_entry FROM account_type v);
+				    p.ipaddr = p_rec.ipaddr;
+				    p.lastms = p_rec.lastms;
+				    p.useragent = p_rec.useragent;
+				    p.service = ARRAY(SELECT (id, ident, CASE WHEN p_rec.service_id = id THEN TRUE ELSE FALSE END)::select_entry FROM service);
+				    p.user_id = p_rec.user_id;
+				    p.user_login = p_rec.user_login;
+				    p.codec_allow = ARRAY( SELECT (c.id, c."name", CASE WHEN ac.id IS NOT NULL THEN TRUE ELSE FALSE END)::select_entry FROM codec c 
+				    	LEFT JOIN account_codec ac ON c.id = ac.codec_id AND ac.account_id = p_id AND ac.allow = TRUE);
+				    p.codec_disallow = ARRAY( SELECT (c.id, c."name", CASE WHEN ac.id IS NOT NULL THEN TRUE ELSE FALSE END)::select_entry FROM codec c 
+				    	LEFT JOIN account_codec ac ON c.id = ac.codec_id AND ac.account_id = p_id AND ac.allow = FALSE);
+				    p.dtmf = ARRAY(SELECT (v.id, v.name, CASE WHEN p_rec.dtmf_id = v.id THEN TRUE ELSE FALSE END)::select_entry FROM account_dtmf v);
+				ELSE
+				    p.id = 0;
+				    --p.name = p_rec.name;
+				    --p.callerid = p_rec.callerid;
+				    --p.callgroup = p_rec.callgroup;
+				    --p.pickupgroup = p_rec.pickupgroup;
+				    --p.context = p_rec.context;
+				    p.context = ARRAY(SELECT (id, "name", FALSE)::select_entry FROM context);
+				    p.host = 'dynamic';
+				    --p.nat = p_rec.nat;
+				    p.nat = ARRAY(SELECT (id, "name", FALSE)::select_entry FROM account_nat);
+				    p.qualify = ARRAY(SELECT (id, "name", FALSE)::select_entry FROM account_qualify);
+				    --p.secret = p_rec.secret;
+				    --p.type = p_rec.type;
+				    p.type = ARRAY(SELECT (id, "name", FALSE)::select_entry FROM account_type);
+				    --p.ipaddr = p_rec.ipaddr;
+				    --p.lastms = p_rec.lastms;
+				    --p.useragent = p_rec.useragent;
+				    --p.service = p_rec.ident;
+				    --p.service_id = p_rec.service_id;
+				    p.service = ARRAY(SELECT (id, ident, FALSE)::select_entry FROM service);--commenter_temporally
+				    p.codec_allow = ARRAY( SELECT (id, "name", FALSE)::select_entry FROM codec);
+				    p.codec_disallow = ARRAY( SELECT (id, "name", FALSE)::select_entry FROM codec);
+				    p.dtmf = ARRAY( SELECT (id, "name", FALSE)::select_entry FROM account_dtmf);
+				    --p.user_id = p_rec.user_id;
+				    --p.user_login = p_rec.user_login;
+				END IF;
+			
+				RETURN p;
+			END;
+			$BODY$
+			  LANGUAGE plpgsql VOLATILE;
+    	</createProcedure>
+    	<sql>
+            ALTER FUNCTION voip_account_get(integer, boolean) OWNER TO ${jdbc.username};
+        </sql>
+        <rollback>
+        	DROP FUNCTION voip_account_get(integer, boolean);
+        </rollback>
+    </changeSet>
+     
+ 	<changeSet id="3" author="i.leontyev@gmail.com" runOnChange="true" context="test" dbms="postgresql">
+		<createProcedure>
+			DROP FUNCTION IF EXISTS voip_account_get_list(in p_filter result_filter);
+			
+			CREATE OR REPLACE FUNCTION voip_account_get_list(in p_filter result_filter)
+			  RETURNS SETOF account_entry AS
+			$BODY$
+			DECLARE
+				p_rec record;
+			    p account_entry;
+			BEGIN
+				FOR p_rec IN SELECT 
+				    	a.id
+						FROM account a
+						ORDER BY a.id DESC
+						--LIMIT p_filter.limit OFFSET p_filter.offset
+				LOOP
+					RETURN NEXT voip_account_get(p_rec.id);
+				END LOOP;
+			END;
+			$BODY$
+			LANGUAGE plpgsql VOLATILE;
+    	</createProcedure>
+    	<sql>
+            ALTER FUNCTION voip_account_get_list(in p_filter result_filter) OWNER TO ${jdbc.username};
+        </sql>
+        <rollback>
+        	DROP FUNCTION voip_account_get_list(in p_filter result_filter);
+        </rollback>
+    </changeSet>
+    
+ 	<changeSet id="4" author="i.leontyev@gmail.com" runOnChange="true" context="test" dbms="postgresql">
+		<createProcedure>
+			DROP FUNCTION IF EXISTS voip_account_delete(integer);
+			
+			CREATE OR REPLACE FUNCTION voip_account_delete(p_id integer)
+			  RETURNS void AS
+			$BODY$
+						BEGIN
+							DELETE FROM account a where a.id = p_id;
+						END;
+						$BODY$
+			  LANGUAGE plpgsql VOLATILE;
+    	</createProcedure>
+    	<sql>
+            ALTER FUNCTION voip_account_delete(integer) OWNER TO ${jdbc.username};
+        </sql>
+        <rollback>
+        	DROP FUNCTION voip_account_delete(integer);
+        </rollback>
+    </changeSet>
+ 
+</databaseChangeLog>

@@ -1,0 +1,4 @@
+<!-- <window title="Report" border="normal" hflex="1" height="600px" closable="true" mode="modal"> -->
+<window title="Report" border="normal" width="800px" height="600px" closable="true" mode="modal">
+    <jasperreport id="report" height="600px" />
+</window>

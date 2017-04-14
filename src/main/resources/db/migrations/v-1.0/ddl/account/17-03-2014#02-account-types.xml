@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<databaseChangeLog xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+				   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+				   xmlns:ext="http://www.liquibase.org/xml/ns/dbchangelog-ext"
+    			   xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.0.xsd
+    								   http://www.liquibase.org/xml/ns/dbchangelog-ext http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-ext.xsd">
+    							
+    							
+	<changeSet id="1" author="i.leontyev@gmail.com" context="test" dbms="postgresql">
+    	<sql>
+            CREATE TYPE account_entry AS
+	        (
+			    id integer,
+			    name text,
+			    callerid text,
+			    callgroup text,
+			    pickupgroup text,
+			    context select_entry[],
+			    host text,
+			    nat select_entry[],
+			    qualify select_entry[],
+			    secret text,
+			    type select_entry[],
+			    ipaddr text,
+			    lastms text,
+			    useragent text,
+			    service select_entry[],
+			    user_id integer,
+			    user_login text,
+		        codec_allow select_entry[],
+    			codec_disallow select_entry[],
+    			dtmf select_entry[]
+		    );
+			ALTER TYPE account_entry OWNER TO ${jdbc.username};
+        </sql>
+        <rollback>
+           	DROP TYPE account_entry;
+        </rollback>
+    </changeSet>    							
+    								   
+</databaseChangeLog>

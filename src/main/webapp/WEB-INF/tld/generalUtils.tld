@@ -1,0 +1,43 @@
+<taglib version="2.0"
+        xmlns="http://java.sun.com/xml/j2ee"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:schemaLocation="http://java.sun.com/xml/ns/j2ee/web-jsptaglibrary_2_0.xsd">
+    <tlib-version>1.0</tlib-version>
+    <jsp-version>2.0</jsp-version>
+    <short-name>generalUtilsTags</short-name>
+    <function>
+        <name>getEditFields</name>
+        <function-class>atc.gui.admin.zk.tld.General</function-class>
+        <function-signature>
+            java.util.List getEditFields(atc.gui.admin.domain.PersistentEntity)
+        </function-signature>
+    </function>
+    <function>
+        <name>getFieldCaption</name>
+        <function-class>atc.gui.admin.zk.tld.General</function-class>
+        <function-signature>
+            java.lang.String getFieldCaption(java.lang.String, java.lang.Class)
+        </function-signature>
+    </function>
+    <function>
+        <name>getListFields</name>
+        <function-class>atc.gui.admin.zk.tld.General</function-class>
+        <function-signature>
+            java.util.List getListFields(java.lang.Class)
+        </function-signature>
+    </function>
+    <function>
+        <name>getListFieldsCaptions</name>
+        <function-class>atc.gui.admin.zk.tld.General</function-class>
+        <function-signature>
+            java.lang.String getListFieldsCaptions(java.lang.Class)
+        </function-signature>
+    </function>
+    <function>
+        <name>getFormFieldType</name>
+        <function-class>atc.gui.admin.zk.tld.General</function-class>
+        <function-signature>
+            java.lang.String getFormFieldType(java.lang.reflect.Field)
+        </function-signature>
+    </function>
+</taglib>

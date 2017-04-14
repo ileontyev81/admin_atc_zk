@@ -1,0 +1,199 @@
+<?page title="new page title" contentType="text/html;charset=UTF-8"?>
+<zk>
+	<div apply="org.zkoss.bind.BindComposer"
+		viewModel="@id('vm') @init('atc.gui.admin.zk.viewmodel.report.QueuesVM')"
+		validationMessages="@id('vmsgs')">
+		<tabbox>
+			<tabs>
+				<tab label="Summary"></tab>
+				<tab label="Hourly"></tab>
+				<tab label="GEO"></tab>
+				<tab label="Answered"></tab>
+				<tab label="Abandoned"></tab>
+				<tab label="No Answer"></tab>
+				<tab label="RAW Data"></tab>
+			</tabs>
+			<tabpanels>
+				<tabpanel>
+					<panel>
+						<panelchildren>
+							<include
+								src="uitemplates/edit_entry_ex.zul"
+								entity="@ref(vm.queueSummarySearch)"
+								submitCommand="@ref('queueSummarySearch')" />
+
+							<button label="Search"
+								sclass="btn btn-primary"
+								onClick="@command('queueSummarySearch')" />
+						</panelchildren>
+					</panel>
+
+					<include src="uitemplates/list_entry_ex.zul"
+						entityList="@ref(vm.queueSummaryList)"
+						entityClass="@ref(vm.queueSummaryClass)"
+						selectedEntity="@ref(vm.selectedQueueSummary)"
+						editCommand="@ref('editQueueSummary')"
+						deleteCommand="@ref('deleteQueueSummary')" />
+
+				</tabpanel>
+				<tabpanel>
+					<panel>
+						<panelchildren>
+							<include
+								src="uitemplates/edit_entry_ex.zul"
+								entity="@ref(vm.queueHourlySearch)"
+								submitCommand="@ref('queueHourlySearch')" />
+
+							<button label="Search"
+								sclass="btn btn-primary"
+								onClick="@command('queueHourlySearch')" />
+						</panelchildren>
+					</panel>
+
+					<include src="uitemplates/list_entry_ex.zul"
+						entityList="@ref(vm.queueHourlyList)"
+						entityClass="@ref(vm.queueHourlyClass)"
+						selectedEntity="@ref(vm.selectedQueueHourly)"
+						editCommand="@ref('editQueueHourly')"
+						deleteCommand="@ref('deleteQueueHourly')" />
+
+				</tabpanel>
+				<tabpanel>
+					<panel>
+						<panelchildren>
+							<include
+								src="uitemplates/edit_entry_ex.zul"
+								entity="@ref(vm.queueGeoSearch)"
+								submitCommand="@ref('queueGeoSearch')" />
+
+							<button label="Search"
+								sclass="btn btn-primary"
+								onClick="@command('queueGeoSearch')" />
+						</panelchildren>
+					</panel>
+
+					<include src="uitemplates/list_entry_ex.zul"
+						entityList="@ref(vm.queueGeoList)"
+						entityClass="@ref(vm.queueGeoClass)"
+						selectedEntity="@ref(vm.selectedQueueGeo)"
+						editCommand="@ref('editQueueGeo')"
+						deleteCommand="@ref('deleteQueueGeo')" />
+
+				</tabpanel>
+				<tabpanel>
+					<panel>
+						<panelchildren>
+							<include
+								src="uitemplates/edit_entry_ex.zul"
+								entity="@ref(vm.queueAnsweredSearch)"
+								submitCommand="@ref('queueAnsweredSearch')" />
+							<!-- 
+								<checkbox id="exportChecker" label="Export result" checked="false"
+								onCheck="searchButton.setVisible(!self.isChecked());exportButton.setVisible(self.isChecked());entriesList.setVisible(!self.isChecked())" />
+								
+								<hlayout>
+								<button id="searchButton" 
+								label="Search" sclass="btn btn-primary"
+								onClick="@command('queueAnsweredSearch')" />
+								<include id="exportButton"
+								src="@init('content/uitemplates/export_component.zul')"
+								dataSourceFactory="@ref(vm.queueRawDataFactory)"
+								visible="false" />
+								</hlayout>
+							-->
+							<button label="Search"
+								sclass="btn btn-primary"
+								onClick="@command('queueAnsweredSearch')" />
+
+						</panelchildren>
+					</panel>
+
+					<include id="entriesList"
+						src="uitemplates/list_entry_ex.zul"
+						entityList="@ref(vm.queueAnsweredList)"
+						entityClass="@ref(vm.queueAnsweredClass)"
+						selectedEntity="@ref(vm.selectedQueueAnswered)"
+						editCommand="@ref('editQueueAnswered')"
+						deleteCommand="@ref('deleteQueueAnswered')" />
+
+				</tabpanel>
+				<tabpanel>
+					<panel>
+						<panelchildren>
+							<include
+								src="uitemplates/edit_entry_ex.zul"
+								entity="@ref(vm.queueAbandonedSearch)"
+								submitCommand="@ref('queueAbandonedSearch')" />
+
+							<button label="Search"
+								sclass="btn btn-primary"
+								onClick="@command('queueAbandonedSearch')" />
+						</panelchildren>
+					</panel>
+
+					<include src="uitemplates/list_entry_ex.zul"
+						entityList="@ref(vm.queueAbandonedList)"
+						entityClass="@ref(vm.queueAbandonedClass)"
+						selectedEntity="@ref(vm.selectedQueueAbandoned)"
+						editCommand="@ref('editQueueAbandoned')"
+						deleteCommand="@ref('deleteQueueAbandoned')" />
+
+				</tabpanel>
+				<tabpanel>
+					<panel>
+						<panelchildren>
+							<include
+								src="uitemplates/edit_entry_ex.zul"
+								entity="@ref(vm.queueNoansweredSearch)"
+								submitCommand="@ref('queueNoansweredSearch')" />
+
+							<button label="Search"
+								sclass="btn btn-primary"
+								onClick="@command('queueNoansweredSearch')" />
+						</panelchildren>
+					</panel>
+
+					<include src="uitemplates/list_entry_ex.zul"
+						entityList="@ref(vm.queueNoansweredList)"
+						entityClass="@ref(vm.queueNoansweredClass)"
+						selectedEntity="@ref(vm.selectedQueueNoanswered)"
+						editCommand="@ref('editQueueNoanswered')"
+						deleteCommand="@ref('deleteQueueNoanswered')" />
+
+				</tabpanel>
+				<tabpanel>
+					<panel>
+						<panelchildren>
+							<include
+								src="uitemplates/edit_entry_ex.zul"
+								entity="@ref(vm.queueRawSearch)"
+								submitCommand="@ref('queueRawSearch')" />
+
+							<!-- <checkbox id="exportChecker" label="Export result" checked="false"
+								onCheck="searchButton.setVisible(!self.isChecked());exportButton.setVisible(self.isChecked());entriesList.setVisible(!self.isChecked())" />
+							-->
+
+							<hlayout>
+								<button id="searchButton" label="Search"
+									sclass="btn btn-primary" onClick="@command('queueRawSearch')" />
+								<include id="exportButton"
+									src="@init('uitemplates/export_component.zul')"
+									dataSourceFactory="@ref(vm.queueRawDataFactory)"
+									visible="false" />
+							</hlayout>
+
+						</panelchildren>
+					</panel>
+
+					<include src="uitemplates/list_entry_ex.zul"
+						entityList="@ref(vm.queueRawList)"
+						entityClass="@ref(vm.queueRawClass)"
+						selectedEntity="@ref(vm.selectedQueueRaw)"
+						editCommand="@ref('editQueueRaw')"
+						deleteCommand="@ref('deleteQueueRaw')" />
+
+				</tabpanel>
+			</tabpanels>
+		</tabbox>
+	</div>
+</zk>

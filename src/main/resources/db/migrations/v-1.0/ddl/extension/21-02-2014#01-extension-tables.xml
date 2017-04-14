@@ -1,0 +1,82 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<databaseChangeLog xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+				   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+				   xmlns:ext="http://www.liquibase.org/xml/ns/dbchangelog-ext"
+    			   xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.0.xsd
+    								   http://www.liquibase.org/xml/ns/dbchangelog-ext http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-ext.xsd">
+
+ 	<changeSet id="1" author="i.leontyev@gmail.com" context="test">
+        <createTable tableName="extension">
+            <column name="id" autoIncrement="true" type="int">
+                <constraints primaryKey="true" nullable="false" primaryKeyName="pk_extension" />
+            </column>
+            <column name="seq" type="int" defaultValueNumeric="0">
+            	<constraints nullable="false" />
+            </column>
+            <column name="description" type="text" defaultValue="">
+            	<constraints nullable="false" />
+            </column>
+            <column name="active" type="boolean" defaultValueBoolean="true">
+                <constraints nullable="false" />
+            </column>
+            <column name="created" type="java.sql.Types.TIMESTAMP" defaultValueComputed="${now}">
+            	<constraints nullable="false"/>
+            </column>
+            <column name="user_id" type="int"/>
+            <column name="deleted" type="boolean" defaultValueBoolean="false">
+                <constraints nullable="false" />
+            </column>
+        </createTable>
+            <sql>
+            	ALTER TABLE extension OWNER TO ${jdbc.username};
+        	</sql>
+        <rollback>
+        	<dropTable tableName="extension"/>
+        </rollback>
+    </changeSet>
+    
+ 	<changeSet id="2" author="i.leontyev@gmail.com" context="test">
+        <createTable tableName="extension_call_dst">
+            <column name="id" autoIncrement="true" type="int">
+                <constraints primaryKey="true" nullable="false" primaryKeyName="extension_call_dst_pkey" />
+            </column>
+            <column name="regex" type="text" defaultValue="">
+            	<constraints nullable="false" />
+            </column>
+            <column name="created" type="java.sql.Types.TIMESTAMP" defaultValueComputed="${now}">
+            	<constraints nullable="false"/>
+            </column>
+            <column name="user_id" type="int"/>
+        </createTable>
+            <sql>
+            	ALTER TABLE extension_call_dst OWNER TO ${jdbc.username};
+        	</sql>
+        <rollback>
+        	<dropTable tableName="extension_call_dst"/>
+        </rollback>
+    </changeSet>
+    
+ 	<changeSet id="3" author="i.leontyev@gmail.com" context="test">
+        <createTable tableName="extension_call_src">
+            <column name="id" autoIncrement="true" type="int" >
+                <constraints primaryKey="true" nullable="false" primaryKeyName="extension_call_src_pkey" />
+            </column>
+            <column name="regex" type="text" defaultValue="">
+            	<constraints nullable="false" />
+            </column>
+            <column name="created" type="java.sql.Types.TIMESTAMP" defaultValueComputed="${now}">
+            	<constraints nullable="false"/>
+            </column>
+            <column name="user_id" type="int"/>
+        </createTable>
+            <sql>
+            	ALTER TABLE extension_call_src OWNER TO ${jdbc.username};
+        	</sql>
+        <rollback>
+        	<dropTable tableName="extension_call_src"/>
+        </rollback>
+    </changeSet>
+    
+    <!-- TODO: add other tables -->
+    
+</databaseChangeLog>

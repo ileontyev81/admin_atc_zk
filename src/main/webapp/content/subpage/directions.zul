@@ -1,0 +1,28 @@
+ <?variable-resolver class="org.zkoss.spring.DelegatingVariableResolver"?>
+<zk>
+	<div apply="org.zkoss.bind.BindComposer" vflex="1" hflex="1"
+		 viewModel="@id('dirvm') @init('atc.gui.admin.zk.viewmodel.extension.ExtensionDirectionsVM')">
+		<div sclass="page-header" style="padding-bottom: 8px; margin-bottom:0px;">
+			<label value="${labels.view.extension_directions.list_directions.caption}" sclass="page-header" style="font-size:30px; border-bottom:0px; "/>
+		</div>
+
+		<toolbar>
+			<hlayout sclass="btn-group">
+				<button class="btn btn-primary btn-sm" vflex="1" label="Add New" onClick="@command('create')"/>
+		   </hlayout>
+		</toolbar>
+	
+		<include src="uitemplates/list_entry_ex.zul"
+				 entityList="@ref(dirvm.dataList)"
+				 entityClass="@ref(dirvm.entityClass)"
+				 selectedEntity="@ref(dirvm.selected)"
+				 menuId="@ref('listRightMenu')"
+				 editCommand="@ref('edit')"
+				 deleteCommand="@ref('delete')"/>
+		<menupopup id="listRightMenu">
+	        <menuitem label="Edit" onClick="@command('edit')"/>
+	        <menuitem label="Delete" onClick="@command('delete')"/>
+	    </menupopup>
+	
+	</div>
+</zk>

@@ -1,0 +1,25 @@
+<?taglib uri="http://www.zkoss.org/dsp/web/core" prefix="c"?>
+<zk>
+	<idspace>
+		<div apply="org.zkoss.bind.BindComposer" vflex="1" hflex="1" sclass="form-group" 
+			 viewModel="@id('selectvm') @init('atc.gui.admin.zk.viewmodel.ListboxVM', model=data, noSelection=noSelection)">
+			<listbox model="@load(selectvm.dataList)" tabindex="${arg.tab_index}" mold="${arg.mold_value}" multiple="${arg.multiple}"
+			 		 emptyMessage="No items" sclass="form-control" selectedItems="@bind(selectvm.selectedItems)" rows="${arg.rows}"
+			 		 disabled="${arg.disabled or (not arg.noSelection and empty selectvm.dataList)}"
+			 		 id="listboxId">
+				<template name="model">
+					<listitem value="${each}" label="${each.label}">
+						<attribute name="onMouseOver">
+						<![CDATA[
+						    if (!listboxId.isMultiple())
+					        {
+						    	selectvm.setSelectedItems(new HashSet(Arrays.asList(new Object[] {self.getValue()})));
+				        	}
+						]]>
+						</attribute>
+					</listitem>
+				</template>
+			</listbox>
+		</div>
+	</idspace>
+</zk>

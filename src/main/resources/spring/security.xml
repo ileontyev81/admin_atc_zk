@@ -1,0 +1,68 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans:beans xmlns="http://www.springframework.org/schema/security"
+             xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+             xmlns:context="http://www.springframework.org/schema/context"
+             xmlns:beans="http://www.springframework.org/schema/beans"
+             xmlns:zkspsec="http://www.zkoss.org/2008/zkspring/security"
+             xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd
+       							 http://www.springframework.org/schema/security http://www.springframework.org/schema/security/spring-security.xsd
+       							 http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context.xsd
+       							 http://www.zkoss.org/2008/zkspring/security http://www.zkoss.org/2008/zkspring/security/zkspring-security.xsd">
+
+	<context:component-scan base-package="org.zkoss.reference.developer.spring.security.model"/>
+
+	<context:component-scan base-package="atc.gui.admin.security" />
+	 
+	<global-method-security secured-annotations="enabled"/>
+
+    <!-- to use jsp security tags(ftl page) -->
+    <beans:bean id="webexpressionHandler" class="org.springframework.security.web.access.expression.DefaultWebSecurityExpressionHandler"/>
+
+	<http pattern="/css/**" security="none"/>
+	<http pattern="/fonts/**" security="none"/>
+	<http pattern="/js/**" security="none"/>
+	<http pattern="/images/**" security="none"/>
+	<http pattern="/dsp/**" security="none"/>
+	<http pattern="**/favicon.ico" security="none"/>
+	
+	<!-- ZK AU request -->
+	<http pattern="/zkau/**" security="none"/>
+	
+	<http pattern="/images/astral.ico" security="none"/>
+
+ 	<!-- zk do not worked with use-expressions="true" -->
+    <http auto-config="true" pattern="/**">
+        <intercept-url pattern="/login/" access="IS_AUTHENTICATED_ANONYMOUSLY" />
+        <intercept-url pattern="/**" access="IS_AUTHENTICATED_FULLY" />
+        
+        <form-login login-page="/login/"
+                    authentication-failure-url="/login/?error=true"
+        			default-target-url="/content/index.zul"
+                    always-use-default-target="true"
+        			authentication-success-handler-ref="authenticationSuccessHandler"/>
+
+        <logout logout-url="/logout" logout-success-url="/content/index.zul" invalidate-session="true" delete-cookies="JSESSIONID"/>
+
+        <custom-filter ref="zkDesktopReuseFilter" position="FIRST" />
+        <custom-filter ref="zkDisableSessionInvalidateFilter" before="FORM_LOGIN_FILTER"/>
+        <custom-filter ref="zkEnableSessionInvalidateFilter" before="FILTER_SECURITY_INTERCEPTOR"/>
+        <custom-filter ref="zkLoginOKFilter" after="FILTER_SECURITY_INTERCEPTOR"/>
+        <custom-filter ref="zkError403Filter" after="LOGOUT_FILTER"/>
+    </http>
+
+	<zkspsec:zk-event/>
+
+	<authentication-manager>
+		<authentication-provider ref="daoAuthenticationProvider"/>
+	</authentication-manager>
+
+	<beans:bean id="daoAuthenticationProvider" class="org.springframework.security.authentication.dao.DaoAuthenticationProvider">
+	    <beans:property name="userDetailsService" ref="userDetailsService"/>
+	    <beans:property name="passwordEncoder" ref="passwordEncoder"/>
+	</beans:bean>
+	
+ 	<beans:bean id="passwordEncoder" class="org.springframework.security.authentication.encoding.MessageDigestPasswordEncoder">
+     	<beans:constructor-arg value="MD5"/>
+ 	</beans:bean>
+	 
+</beans:beans>

@@ -1,0 +1,130 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<databaseChangeLog xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+				   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+				   xmlns:ext="http://www.liquibase.org/xml/ns/dbchangelog-ext"
+    			   xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.0.xsd
+    								   http://www.liquibase.org/xml/ns/dbchangelog-ext http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-ext.xsd">
+    					
+    								   
+ 	<changeSet id="2" author="i.leontyev@gmail.com" runOnChange="true" context="test">
+		<createProcedure>
+			DROP FUNCTION IF EXISTS logging(text, text);
+			
+			CREATE OR REPLACE FUNCTION logging(p_level text, p_value text)
+			RETURNS void AS
+			$BODY$
+			BEGIN
+				insert into log_table values($1, $2);
+			END;
+			$BODY$
+			LANGUAGE plpgsql VOLATILE;
+    	</createProcedure>
+    	<sql>
+            ALTER FUNCTION logging(text, text) OWNER TO ${jdbc.username};
+        </sql>
+        <rollback>
+        	DROP FUNCTION logging(text, text);
+        </rollback>
+    </changeSet>
+    
+ 	<changeSet id="3" author="i.leontyev@gmail.com" runOnChange="true" context="test">
+		<createProcedure>
+			DROP FUNCTION IF EXISTS condition_chain(map_type, text);
+			
+			CREATE OR REPLACE FUNCTION condition_chain(p_data map_type, divider text)
+			  RETURNS text AS
+			$BODY$
+			DECLARE
+			    p_result text:='';
+			    p_i int;
+			    p_key text;
+			    p_pos int;
+			    p_pair map_entry;
+			BEGIN
+				IF (p_data IS NOT NULL) THEN
+					FOR p_i IN 0..array_length(p_data.entryarray, 1)
+					LOOP
+						p_pair:= p_data.entryarray[p_i];
+						p_key:= p_pair.key;
+						IF length(trim(both from p_key)) > 0 THEN
+							p_result:= concat(p_result, p_key, ' ~ ''', p_pair.value, '''');
+							p_result:= concat(p_result, divider);
+						END IF;
+						
+					END loop;
+					
+					IF length(trim(both from p_result)) > 0 THEN
+						p_result:= substr(p_result, 1, length(p_result) - length(divider));
+					END IF;
+				END IF;
+				
+				RETURN p_result;
+			END;
+			$BODY$
+		  	LANGUAGE plpgsql VOLATILE;
+    	</createProcedure>
+    	<sql>
+            ALTER FUNCTION condition_chain(map_type, text) OWNER TO ${jdbc.username};
+        </sql>
+        <rollback>
+        	DROP FUNCTION condition_chain(map_type, text);
+        </rollback>
+    </changeSet>
+    
+ 	<changeSet id="4" author="i.leontyev@gmail.com" runOnChange="true" context="test">
+		<createProcedure>
+			DROP FUNCTION IF EXISTS where_clause(map_type);
+			
+			CREATE OR REPLACE FUNCTION where_clause(p_regex map_type)
+			  RETURNS text AS
+				$BODY$
+					DECLARE
+						p_clause text:='';
+						BEGIN
+							p_clause:= condition_chain(p_regex, ' AND ');
+							IF length(trim(p_clause)) > 0 THEN
+								RETURN ' WHERE ' || p_clause;
+							END IF;
+							
+							RETURN '';
+						END;
+				$BODY$
+			  LANGUAGE plpgsql VOLATILE;
+    	</createProcedure>
+    	<sql>
+            ALTER FUNCTION where_clause(map_type) OWNER TO ${jdbc.username};
+        </sql>
+        <rollback>
+        	DROP FUNCTION where_clause(map_type);
+        </rollback>
+    </changeSet>
+    
+ 	<changeSet id="5" author="i.leontyev@gmail.com" runOnChange="true" context="test">
+		<createProcedure>
+			DROP FUNCTION IF EXISTS order_clause(map_entry);
+			
+			CREATE OR REPLACE FUNCTION order_clause(p_ordering map_type)
+			  RETURNS text AS
+				$BODY$
+					DECLARE
+						p_clause text:='';
+						BEGIN
+							p_clause:= condition_chain(p_ordering, ',');
+							IF length(trim(p_clause)) > 0 THEN
+								RETURN ' ORDER BY ' || p_clause;
+							END IF;
+							
+							RETURN '';
+						END;
+				$BODY$
+			  LANGUAGE plpgsql VOLATILE;
+    	</createProcedure>
+    	<sql>
+            ALTER FUNCTION order_clause(map_entry) OWNER TO ${jdbc.username};
+        </sql>
+        <rollback>
+        	DROP FUNCTION order_clause(map_entry);
+        </rollback>
+    </changeSet>
+ 
+</databaseChangeLog>

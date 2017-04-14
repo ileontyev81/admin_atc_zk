@@ -1,0 +1,55 @@
+<?taglib uri="http://www.zkoss.org/dsp/web/core" prefix="c"?>
+<zk>
+   	<div vflex="1" hflex="1"
+		 apply="org.zkoss.bind.BindComposer"
+		 viewModel="@id('vm') @init('atc.gui.admin.zk.viewmodel.QueueVM')"
+		 validationMessages="@id('vmsgs')">
+		 
+		<div sclass="page-header" style="padding-bottom: 8px; margin-bottom:0px;">
+			<label value="${c:l(c:cat3('view.caption.queue.', vm.entity.isPersisted() ? 'edit' : 'add', ''))}" 
+				   sclass="page-header" style="font-size:30px; border-bottom:0px; "/>
+		</div>
+		
+		<panel>
+		<panelchildren>
+		<include src="uitemplates/edit_entry_ex.zul" vflex="1"
+			     entity="@ref(vm.entity)"
+			     submitCommand="@ref('submit')"/>
+ 		<button label="Submit" sclass="btn btn-primary" onClick="@command('submit')"/>
+ 		</panelchildren>
+ 		</panel>
+ 		
+ 		
+ 		
+ 		<zk if='${vm.entity.isPersisted()}'>
+
+			<panel>
+				<panelchildren>
+					<div sclass="page-header"
+						style="margin-bottom:8px;;">
+						<label value="Static Members" sclass="page-header"
+							style="font-size:20px; border-bottom:0px;" hflex="1" />
+					</div>
+					<div>
+						<button class="btn btn-primary btn-sm" vflex="1"
+							label="Add Member" onClick="@command('goAddMember')" />
+					</div>
+
+					<include src="uitemplates/list_entry_ex.zul"
+						entityList="@ref(vm.memberList)"
+						entityClass="@ref(vm.memberClass)"
+						selectedEntity="@ref(vm.memberSelected)"
+						menuId="@ref('memberListMenu')" editCommand="@ref('editMember')"
+						deleteCommand="@ref('deleteMember')" />
+					<menupopup id="memberListMenu">
+						<menuitem label="Edit"
+							onClick="@command('editMember')" />
+						<menuitem label="Delete"
+							onClick="@command('deleteMember')" />
+					</menupopup>
+
+				</panelchildren>
+			</panel>
+		</zk>
+	</div>
+</zk>

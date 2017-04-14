@@ -1,0 +1,53 @@
+<?taglib uri="http://www.zkoss.org/dsp/web/core" prefix="c"?>
+<zk>
+	<div vflex="1" hflex="1" apply="org.zkoss.bind.BindComposer"
+		viewModel="@id('vm') @init('atc.gui.admin.zk.viewmodel.GroupVM')"
+		validationMessages="@id('vmsgs')">
+
+		<div sclass="page-header"
+			style="padding-bottom: 8px; margin-bottom:0px;">
+			<label
+				value="${c:l(c:cat3('view.caption.group.', vm.entity.isPersisted() ? 'edit' : 'add', ''))}"
+				sclass="page-header" style="font-size:30px; border-bottom:0px; " />
+		</div>
+		<panel>
+			<panelchildren>
+				<include src="uitemplates/edit_entry_ex.zul"
+					vflex="1" entity="@ref(vm.entity)" submitCommand="@ref('submit')" />
+				<button label="Save" sclass="btn btn-primary"
+					onClick="@command('submit')" />
+			</panelchildren>
+		</panel>
+		<!-- 
+		<zk if='${vm.entity.isPersisted()}'>
+		<panel>
+				<panelchildren>
+					<div sclass="page-header"
+						style="margin-bottom:8px;;">
+						<label value="Supervisors" sclass="page-header"
+							style="font-size:20px; border-bottom:0px;" hflex="1" />
+					</div>
+					<div>
+						<button class="btn btn-primary btn-sm" vflex="1"
+							label="Add Supervisor" onClick="@command('goAddSupervisor')" />
+					</div>
+
+					<include src="uitemplates/list_entry_ex.zul"
+						entityList="@ref(vm.supervisorList)"
+						entityClass="@ref(vm.supervisorClass)"
+						selectedEntity="@ref(vm.supervisorSelected)"
+						menuId="@ref('supervisorListMenu')" editCommand="@ref('editSupervisor')"
+						deleteCommand="@ref('deleteAction')" />
+					<menupopup id="supervisorListMenu">
+						<menuitem label="Edit"
+							onClick="@command('editSupervisor')" />
+						<menuitem label="Delete"
+							onClick="@command('deleteSupervisor')" />
+					</menupopup>
+
+				</panelchildren>
+			</panel>
+		</zk>
+		-->
+	</div>
+</zk>

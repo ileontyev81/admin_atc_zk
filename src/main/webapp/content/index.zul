@@ -1,0 +1,17 @@
+<?page title="${app.browsertab.title}" contentType="text/html;charset=UTF-8" id="index"?>
+<!-- Load fonts from local -->
+<?link href="/css/fonts.css" rel="stylesheet" type="text/css"?>
+<?link href="/dsp/index.css.dsp" rel="stylesheet" type="text/css"?>
+
+<?variable-resolver class="org.zkoss.spring.DelegatingVariableResolver"?>
+<?taglib uri="http://www.zkoss.org/zkspring/security" prefix="sec"?>
+<zk>
+	<include src="navbar.zul"/>
+	<hlayout id="main" spacing="0" style="overflow-y:auto;">
+		<include src="sidebar.zul" />
+		<vlayout hflex="1">
+			<include src="breadcrumbs.zul" hflex="1"/>
+			<include src="content.zul" hflex="1"/>
+		</vlayout>
+	</hlayout>
+</zk>
