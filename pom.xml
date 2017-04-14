@@ -124,7 +124,7 @@
 		    <artifactId>acebox</artifactId>
 		    <version>0.0.1-SNAPSHOT</version>
 		    <scope>system</scope>
-		    <systemPath>${basedir}/libs/acebox-0.0.1-SNAPSHOT.jar</systemPath>
+		    <systemPath>${basedir}/extlibs/acebox-0.0.1-SNAPSHOT.jar</systemPath>
 		</dependency>
 
 		<!-- external sound playing component -->
@@ -133,7 +133,7 @@
 		    <artifactId>soundmanager</artifactId>
 		    <version>0.8.0</version>
 		    <scope>system</scope>
-		    <systemPath>${basedir}/libs/soundmanager-0.8.0.jar</systemPath>
+		    <systemPath>${basedir}/extlibs/soundmanager-0.8.0.jar</systemPath>
 		</dependency>
 
         <!-- ckeditor -->
@@ -761,8 +761,8 @@
 							<directory>${basedir}</directory>
 							<targetPath>WEB-INF/lib</targetPath>
 							<includes>
-								<include>libs/acebox-0.0.1-SNAPSHOT.jar</include>
-								<include>libs/soundmanager-0.8.0.jar</include>
+								<include>extlibs/acebox-0.0.1-SNAPSHOT.jar</include>
+								<include>extlibs/soundmanager-0.8.0.jar</include>
 							</includes>
 						</resource>
 					</webResources>
