@@ -1,6 +1,6 @@
 ## ATCAdminConsole
 Admin UI interface to tune and control ATC(used for sip support inside CRM) and related CRM settings.
-Author use Asterix ATC.
+Author use Asterisk ATC.
 
 ## Start application under Tomcat application server
 Чтобы в Tomcat приложение занимало root путь:
