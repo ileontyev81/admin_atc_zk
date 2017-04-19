@@ -34,23 +34,9 @@
         <device-type>ajax</device-type>
         <server-push-class>org.zkoss.zkmax.ui.comet.CometServerPush</server-push-class>
     </device-config>
-    <!-- on demand DOM model creation -->
-    <!-- used for listboxes, grids with huge data(all data stored in memory on server side) -->
-    <!--
-	<library-property>
-		<name>org.zkoss.zul.listbox.rod</name>
-		<value>true</value>
-	</library-property>
-    -->
-<!-- 
-	<library-property>
-	    <name>org.zkoss.web.preferred.timeZone</name>
-	    <value>GMT+3</value>
-	</library-property>
- -->	
+
 	<session-config>
 		<device-type>ajax</device-type>
-		<!-- <timeout-uri>/timeout.zul</timeout-uri> -->
 		<timeout-uri></timeout-uri> <!-- An empty URL can cause the browser to reload the same URL -->
 	</session-config>
 
@@ -60,30 +46,10 @@
 		<location>/content/error/general_error.zul</location>
 	</error-page>
 
-    <!--
-	<session-config>
-	    <session-timeout>1800</session-timeout>    
-	    <device-type>ajax</device-type>   
-	    <timeout-uri>/logout</timeout-uri>   
-	</session-config>
-    -->
-
-	<!-- 
+	<!-- Optional -->
+    <!-- the following listener is used to see # of sessions, desktops... -->
 	<listener>
-		<description>ZK Exception Translation Listener</description>
-		<listener-class>org.zkoss.spring.security.ui.ZkExceptionTranslationListener</listener-class>
-	</listener>
-	 -->
-	 <!-- 
-	<preference>
-		<name>org.zkoss.zul.Window.defaultActionOnShow</name>
-		<value></value>
-	</preference> 
-	 -->
-	 
-	 <!-- Optional -->
-	<listener>
-		<description> Mointor the statistic</description>
+		<description>Mointor the statistic</description>
 		<listener-class>org.zkoss.zk.ui.util.Statistic</listener-class>
 	</listener>
 
@@ -112,14 +78,18 @@
 		<value>false</value>
 	</library-property>
 
-    <!--silvertail, sapphire-->
-    <!--
-	<library-property>
-	    <name>org.zkoss.theme.preferred</name>
-	    <value>atlantic</value>
-	</library-property>
-    -->
-	<!-- bootstrap components mold -->
+	<!-- [ZK EE]
+    Turn on if you want to block the requests sent from inaccessible
+    widgets (such as invisible or disabled).
+    It is used to protect your application from the attack that
+    goes through the invisible widgets.
+    Once turned on, the request from an invisible widget is blocked.
+    See also org.zkoss.zkmax.au.IWBS.events -->
+    <listener>
+        <listener-class>org.zkoss.zkmax.au.InaccessibleWidgetBlockService$DesktopInit</listener-class>
+    </listener>
+
+<!-- bootstrap components mold -->
 	<library-property>
 		<name>org.zkoss.zul.Button.mold</name>
 		<value>bs</value>
@@ -128,7 +98,6 @@
 		<name>org.zkoss.zul.Menupopup.mold</name>
 		<value>bs</value>
 	</library-property>
-
 	<library-property>
 		<name>org.zkoss.zul.Paging.mold</name>
 		<value>bs</value>
@@ -138,9 +107,7 @@
 		<value>bs</value>
 	</library-property>
 
-	<!-- ckeditor -->
     <language-config>
-        <addon-uri>/META-INF/ckez-bind-addon.xml</addon-uri>
         <addon-uri>/META-INF/ace-editor-addon.xml</addon-uri>
         <addon-uri>/META-INF/soundmanager-addon.xml</addon-uri>
     </language-config>

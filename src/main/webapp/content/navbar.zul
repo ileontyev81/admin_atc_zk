@@ -1,4 +1,3 @@
-<!--<?taglib uri="http://www.zkoss.org/zkspring/security" prefix="sec"?>-->
 <div sclass="navbar" apply="org.zkoss.bind.BindComposer"
 					 viewModel="@id('vm') @init('atc.gui.admin.zk.viewmodel.NavbarVM')">
 

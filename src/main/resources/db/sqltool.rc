@@ -1,4 +1,4 @@
-driver ${jdbc.driverClassName}
+driver ${jdbc.driver.class.name}
 urlid ${jdbc.host}-${jdbc.username}
 url ${jdbc.url}
 username ${jdbc.username}

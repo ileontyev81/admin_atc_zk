@@ -40,6 +40,7 @@
 		</rollingPolicy>
 	</appender>
 	-->
+<!--
 
     <logger name="atc.gui.admin" level="DEBUG" additivity="false">
     	<appender-ref ref="STDOUT" />
@@ -72,8 +73,9 @@
     <logger name="o.e.jetty" level="DEBUG" additivity="false">
     	<appender-ref ref="STDOUT" />
     </logger>
+-->
 
-    <root level="DEBUG">
+    <root level="ERROR">
 		<appender-ref ref="STDOUT" />
 	</root>
 

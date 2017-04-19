@@ -1,12 +1,28 @@
+/*
+ * Copyright (C) 2017 i.leontyev81@gmail.com
+ *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program. If not, see <http://www.gnu.org/licenses/>.
+ */
+
 package atc.gui.admin.zk.transition.impl;
 
 import atc.gui.admin.zk.event.EventHandler;
 import atc.gui.admin.zk.event.impl.PathChangedEvent;
+import atc.gui.admin.zk.service.BrowserHistoryChangedHandler;
 import atc.gui.admin.zk.transition.Path;
 import atc.gui.admin.zk.transition.PathPart;
 import atc.gui.admin.zk.transition.TransitionManager;
-import atc.gui.admin.zk.service.BrowserHistoryChangedHandler;
-import com.google.common.base.Optional;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
@@ -21,10 +37,7 @@ import org.zkoss.zk.ui.event.EventListener;
 import org.zkoss.zk.ui.event.EventQueue;
 import org.zkoss.zk.ui.event.EventQueues;
 
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 import java.util.concurrent.CopyOnWriteArraySet;
 
 @Slf4j
@@ -107,7 +120,7 @@ public class TransitionManagerImpl implements TransitionManager, EventListener<E
 				return Optional.of(handler);
 			}
 		}
-		return Optional.absent();
+		return Optional.empty();
 	}
 	
 	private void firePathChangedEvent(final PathChangedEvent event)

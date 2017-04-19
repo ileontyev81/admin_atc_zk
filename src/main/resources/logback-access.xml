@@ -11,7 +11,7 @@
 		<encoder class="de.huxhorn.lilith.logback.encoder.AccessLilithEncoder" /> 
 	</appender>
 
-	<root level="DEBUG">
+	<root level="ERROR">
 		<appender-ref ref="STDOUT" />
 	</root>
 </configuration>
